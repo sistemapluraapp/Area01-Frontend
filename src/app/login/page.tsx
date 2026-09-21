@@ -11,6 +11,7 @@ import Footer from '@/components/Footer'
 import { EmailIcon, LockIcon, EyeIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 import { salvarSessao } from '@/lib/auth'
+import { LOGO_DATA_URI } from '@/lib/logo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -54,8 +55,9 @@ export default function LoginPage() {
         }}
       >
         <GlassCard variant="lg" style={{ width: '100%', maxWidth: '420px', padding: '2.5rem 2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ fontWeight: 900, fontSize: '1.5rem', letterSpacing: '-0.03em' }}>Plura</span>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={LOGO_DATA_URI} alt="Plura" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} draggable={false} />
           </div>
 
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
