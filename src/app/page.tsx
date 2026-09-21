@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import { SearchIcon, UserIcon } from '@/components/icons'
 import { api, type Pagina } from '@/lib/api'
@@ -115,53 +116,37 @@ export default function HomePage() {
     <>
       <Grain />
 
-      <header
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0.875rem 1.5rem',
-          gap: '1rem',
-          background: 'var(--c-glass-bg)',
-          backdropFilter: 'blur(20px)',
-          borderBottom: '1px solid var(--c-divider)',
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={LOGO_DATA_URI} alt="Plura" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} draggable={false} />
-        <div style={{ flex: 1 }} />
-        {logado ? (
-          <>
-            <NotificationBell />
+      <Header
+        right={
+          logado ? (
+            <>
+              <NotificationBell />
+              <button
+                onClick={() => router.push('/perfil')}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
+                  background: 'linear-gradient(135deg,#1a7aff,#0062e6)', border: 'none', borderRadius: '0.75rem',
+                  color: '#fff', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(26,122,255,0.35)',
+                }}
+              >
+                <UserIcon /> Minha Área
+              </button>
+            </>
+          ) : (
             <button
-              onClick={() => router.push('/perfil')}
+              onClick={() => router.push('/login')}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
-                background: 'linear-gradient(135deg,#1a7aff,#0062e6)', border: 'none', borderRadius: '0.75rem',
-                color: '#fff', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(26,122,255,0.35)',
+                background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)', borderRadius: '0.75rem',
+                color: 'var(--c-text-1)', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
               }}
             >
-              <UserIcon /> Minha Área
+              <UserIcon /> Entrar
             </button>
-          </>
-        ) : (
-          <button
-            onClick={() => router.push('/login')}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
-              background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)', borderRadius: '0.75rem',
-              color: 'var(--c-text-1)', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
-            }}
-          >
-            <UserIcon /> Entrar
-          </button>
-        )}
-      </header>
+          )
+        }
+      />
 
       <main style={{ paddingTop: '5rem', paddingBottom: '4rem', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem 2.5rem', maxWidth: '680px', margin: '0 auto' }}>
