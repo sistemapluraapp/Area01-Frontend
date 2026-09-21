@@ -9,9 +9,9 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import EditProfileModal from '@/components/EditProfileModal'
-import { CameraIcon, LayersIcon, PlusIcon } from '@/components/icons'
+import { CameraIcon, EditIcon, LayersIcon, PlusIcon } from '@/components/icons'
 import { api, type Perfil, type Colaboracao, type Avaliacao } from '@/lib/api'
-import { estaLogado, limparSessao } from '@/lib/auth'
+import { estaLogado, limparSessao, obterUsuarioSalvo } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
 
 const GESTAO_URL = 'https://area02-frontend.pages.dev/login'
@@ -167,56 +167,93 @@ export default function PerfilPage() {
                 onChange={aoSelecionarAvatar}
                 style={{ display: 'none' }}
               />
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                onMouseEnter={() => setAvatarHover(true)}
-                onMouseLeave={() => setAvatarHover(false)}
-                role="button"
-                tabIndex={0}
-                aria-label="Alterar foto de perfil"
-                onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-                style={{
-                  position: 'relative',
-                  width: '76px',
-                  height: '76px',
-                  borderRadius: '50%',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  background: 'linear-gradient(135deg,#1a7aff,#0062e6)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '2px solid rgba(255,255,255,0.18)',
-                }}
-              >
-                {perfil.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={perfil.avatar_url}
-                    alt={nomeExibido}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    draggable={false}
-                  />
-                ) : (
-                  <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'rgba(255,255,255,0.92)' }}>
-                    {iniciaisDe(nomeExibido)}
-                  </span>
-                )}
+              <div style={{ position: 'relative', flexShrink: 0 }}>
                 <div
+                  onClick={() => fileInputRef.current?.click()}
+                  onMouseEnter={() => setAvatarHover(true)}
+                  onMouseLeave={() => setAvatarHover(false)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Alterar foto de perfil"
+                  onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
                   style={{
-                    position: 'absolute',
-                    inset: 0,
+                    position: 'relative',
+                    width: '88px',
+                    height: '88px',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    background: 'linear-gradient(135deg,#1a7aff,#0062e6)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    background: 'rgba(0,0,0,0.55)',
-                    color: '#fff',
-                    opacity: avatarHover || enviandoAvatar ? 1 : 0,
-                    transition: 'opacity 150ms ease',
+                    border: '2px solid rgba(26,122,255,0.45)',
+                    boxShadow: '0 0 20px rgba(26,122,255,0.20)',
                   }}
                 >
-                  <CameraIcon />
+                  {perfil.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={perfil.avatar_url}
+                      alt={nomeExibido}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      draggable={false}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'rgba(255,255,255,0.92)' }}>
+                      {iniciaisDe(nomeExibido)}
+                    </span>
+                  )}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'rgba(0,0,0,0.55)',
+                      color: '#fff',
+                      opacity: avatarHover || enviandoAvatar ? 1 : 0,
+                      transition: 'opacity 150ms ease',
+                    }}
+                  >
+                    {enviandoAvatar ? (
+                      <div
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                          border: '2px solid rgba(255,255,255,0.3)',
+                          borderTopColor: '#fff',
+                          borderRadius: '50%',
+                          animation: 'spin 0.7s linear infinite',
+                        }}
+                      />
+                    ) : (
+                      <CameraIcon />
+                    )}
+                  </div>
+                </div>
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '50%',
+                    background: '#1a7aff',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid var(--c-bg, #04040f)',
+                    boxShadow: '0 2px 8px rgba(26,122,255,0.45)',
+                    color: '#fff',
+                  }}
+                >
+                  <EditIcon />
                 </div>
               </div>
 
@@ -346,6 +383,7 @@ export default function PerfilPage() {
       {modalAberto && (
         <EditProfileModal
           perfil={perfil}
+          email={obterUsuarioSalvo()?.email ?? ''}
           onClose={() => setModalAberto(false)}
           onSaved={(atualizado) => {
             setPerfil(atualizado)
