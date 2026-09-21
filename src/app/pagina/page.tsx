@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import GlassCard from '@/components/GlassCard'
 import Button from '@/components/Button'
+import Grain from '@/components/Grain'
+import Footer from '@/components/Footer'
 import { api, type Pagina, type Avaliacao } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 
@@ -27,6 +29,7 @@ function PaginaDetalhe() {
 
   useEffect(() => {
     if (id) carregar()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   async function avaliar(e: React.FormEvent) {
@@ -47,24 +50,40 @@ function PaginaDetalhe() {
     }
   }
 
-  if (erro && !pagina) return <p className="error-banner">{erro}</p>
-  if (!pagina) return <p className="label-mono">carregando…</p>
+  if (erro && !pagina) {
+    return (
+      <div style={{ padding: '1rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+        {erro}
+      </div>
+    )
+  }
+  if (!pagina) return <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>
 
   return (
     <>
-      <GlassCard>
-        <span className="label-mono">{pagina.tipo}</span>
-        <h2 style={{ margin: '0.4rem 0' }}>{pagina.nome}</h2>
+      <GlassCard variant="lg">
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--c-text-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          {pagina.tipo}
+        </span>
+        <h2 style={{ margin: '0.4rem 0', fontSize: '1.375rem', fontWeight: 800 }}>{pagina.nome}</h2>
         <p style={{ color: 'var(--c-text-2)' }}>{pagina.descricao}</p>
       </GlassCard>
 
-      <GlassCard className="pagina-card" style={{ marginTop: '1.5rem', cursor: 'default' }}>
-        <h3 style={{ marginTop: 0 }}>Avaliar</h3>
-        {erro && <p className="error-banner">{erro}</p>}
+      <GlassCard style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ marginTop: 0, marginBottom: '1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Avaliar</h3>
+        {erro && (
+          <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', fontSize: '0.875rem', color: '#f87171' }}>
+            {erro}
+          </div>
+        )}
         <form onSubmit={avaliar}>
-          <div className="field">
-            <label>Nota</label>
-            <select className="input" value={nota} onChange={(e) => setNota(Number(e.target.value))}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', marginBottom: '1rem' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--c-input-label)' }}>Nota</label>
+            <select
+              value={nota}
+              onChange={(e) => setNota(Number(e.target.value))}
+              style={{ padding: '0.625rem 1rem', background: 'var(--c-input-bg)', border: '1px solid var(--c-input-border)', borderRadius: '0.75rem', color: 'var(--c-input-text)', fontSize: '0.9375rem', fontFamily: 'inherit' }}
+            >
               {[5, 4, 3, 2, 1].map((n) => (
                 <option key={n} value={n}>
                   {n} estrela(s)
@@ -72,13 +91,13 @@ function PaginaDetalhe() {
               ))}
             </select>
           </div>
-          <div className="field">
-            <label>Comentário</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', marginBottom: '1rem' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--c-input-label)' }}>Comentário</label>
             <textarea
-              className="input"
               rows={3}
               value={comentario}
               onChange={(e) => setComentario(e.target.value)}
+              style={{ padding: '0.75rem 1rem', background: 'var(--c-input-bg)', border: '1px solid var(--c-input-border)', borderRadius: '0.75rem', color: 'var(--c-input-text)', fontSize: '0.9375rem', fontFamily: 'inherit', resize: 'vertical' }}
             />
           </div>
           <Button type="submit" loading={enviando}>
@@ -87,28 +106,34 @@ function PaginaDetalhe() {
         </form>
       </GlassCard>
 
-      <h3 style={{ marginTop: '2rem' }}>Avaliações ({pagina.avaliacoes.length})</h3>
-      {pagina.avaliacoes.map((a) => (
-        <GlassCard key={a.id} className="pagina-card" style={{ cursor: 'default' }}>
-          <span className="label-mono">nota {a.nota}/5</span>
-          <p style={{ margin: '0.4rem 0' }}>{a.comentario}</p>
-          {a.resposta && (
-            <p style={{ fontSize: '0.85rem', color: 'var(--c-text-2)', borderLeft: '2px solid var(--c-blue-500)', paddingLeft: '0.6rem' }}>
-              Resposta: {a.resposta}
-            </p>
-          )}
-        </GlassCard>
-      ))}
+      <h3 style={{ margin: '2rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Avaliações ({pagina.avaliacoes.length})</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+        {pagina.avaliacoes.map((a) => (
+          <GlassCard key={a.id} variant="sm">
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--c-text-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              nota {a.nota}/5
+            </span>
+            <p style={{ margin: '0.4rem 0', fontSize: '0.9375rem' }}>{a.comentario}</p>
+            {a.resposta && (
+              <p style={{ fontSize: '0.85rem', color: 'var(--c-text-2)', borderLeft: '2px solid var(--blue-500)', paddingLeft: '0.6rem' }}>Resposta: {a.resposta}</p>
+            )}
+          </GlassCard>
+        ))}
+      </div>
     </>
   )
 }
 
 export default function PaginaPage() {
   return (
-    <main className="container" style={{ paddingTop: '3rem', paddingBottom: '3rem', maxWidth: 640 }}>
-      <Suspense fallback={<p className="label-mono">carregando…</p>}>
-        <PaginaDetalhe />
-      </Suspense>
-    </main>
+    <>
+      <Grain />
+      <main style={{ maxWidth: '640px', margin: '0 auto', padding: '3rem 1.25rem 3rem', position: 'relative', zIndex: 1 }}>
+        <Suspense fallback={<p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>}>
+          <PaginaDetalhe />
+        </Suspense>
+      </main>
+      <Footer />
+    </>
   )
 }

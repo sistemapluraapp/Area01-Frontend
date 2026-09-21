@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import GlassCard from '@/components/GlassCard'
 import Input from '@/components/Input'
 import Button from '@/components/Button'
+import Grain from '@/components/Grain'
+import Footer from '@/components/Footer'
+import { IdIcon, UserIcon } from '@/components/icons'
 import { api, type Usuario, type Avaliacao } from '@/lib/api'
 import { estaLogado, limparSessao } from '@/lib/auth'
 
@@ -53,47 +56,68 @@ export default function PerfilPage() {
 
   if (carregando) {
     return (
-      <main className="container" style={{ paddingTop: '3rem' }}>
-        <p className="label-mono">carregando…</p>
+      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>
       </main>
     )
   }
 
   return (
-    <main className="container" style={{ paddingTop: '3rem', paddingBottom: '3rem', maxWidth: 640 }}>
-      <GlassCard>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ margin: 0 }}>Minha área</h2>
-          <button className="btn btn-outline" onClick={sair}>
-            Sair
-          </button>
-        </div>
+    <>
+      <Grain />
+      <main style={{ maxWidth: '640px', margin: '0 auto', padding: '3rem 1.25rem 3rem', position: 'relative', zIndex: 1 }}>
+        <GlassCard variant="lg" style={{ padding: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '3rem', height: '3rem', borderRadius: '50%', background: 'linear-gradient(135deg,#1a7aff,#0062e6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <UserIcon />
+              </div>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Minha área</h2>
+                <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)' }}>cpf {usuario?.cpf}</p>
+              </div>
+            </div>
+            <Button variant="ghost" size="sm" onClick={sair}>
+              Sair
+            </Button>
+          </div>
 
-        {erro && <p className="error-banner">{erro}</p>}
+          {erro && (
+            <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', fontSize: '0.875rem', color: '#f87171' }}>
+              {erro}
+            </div>
+          )}
 
-        <form onSubmit={salvar} style={{ marginTop: '1.5rem' }}>
-          <Input id="nome" label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-          <p className="label-mono">cpf: {usuario?.cpf}</p>
-          <Button type="submit">{salvo ? 'Salvo ✓' : 'Salvar alterações'}</Button>
-        </form>
-      </GlassCard>
+          <form onSubmit={salvar}>
+            <Input label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} leadingIcon={<IdIcon />} />
+            <div style={{ marginTop: '1rem' }}>
+              <Button type="submit" variant={salvo ? 'secondary' : 'primary'}>
+                {salvo ? 'Salvo ✓' : 'Salvar alterações'}
+              </Button>
+            </div>
+          </form>
+        </GlassCard>
 
-      <h3 style={{ marginTop: '2rem' }}>Minhas avaliações</h3>
-      {avaliacoes.length === 0 ? (
-        <p style={{ color: 'var(--c-text-2)' }}>Você ainda não avaliou nenhuma Página.</p>
-      ) : (
-        avaliacoes.map((a) => (
-          <GlassCard key={a.id} className="pagina-card" >
-            <span className="label-mono">nota {a.nota}/5</span>
-            <p style={{ margin: '0.4rem 0' }}>{a.comentario}</p>
-            {a.resposta && (
-              <p style={{ fontSize: '0.85rem', color: 'var(--c-text-2)', borderLeft: '2px solid var(--c-blue-500)', paddingLeft: '0.6rem' }}>
-                Resposta: {a.resposta}
-              </p>
-            )}
-          </GlassCard>
-        ))
-      )}
-    </main>
+        <h3 style={{ margin: '2rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Minhas avaliações</h3>
+        {avaliacoes.length === 0 ? (
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não avaliou nenhuma Página.</p>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+            {avaliacoes.map((a) => (
+              <GlassCard key={a.id} variant="sm">
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--c-text-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  nota {a.nota}/5
+                </span>
+                <p style={{ margin: '0.4rem 0', fontSize: '0.9375rem' }}>{a.comentario}</p>
+                {a.resposta && (
+                  <p style={{ fontSize: '0.85rem', color: 'var(--c-text-2)', borderLeft: '2px solid var(--blue-500)', paddingLeft: '0.6rem' }}>Resposta: {a.resposta}</p>
+                )}
+              </GlassCard>
+            ))}
+          </div>
+        )}
+      </main>
+      <Footer />
+    </>
   )
 }
