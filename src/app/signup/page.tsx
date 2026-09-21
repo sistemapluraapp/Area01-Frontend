@@ -11,6 +11,7 @@ import { EmailIcon, LockIcon, EyeIcon, UserIcon, IdIcon } from '@/components/ico
 import { api } from '@/lib/api'
 import { salvarSessao } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
+import { LOGO_DATA_URI } from '@/lib/logo'
 
 function SectionLabel({ label }: { label: string }) {
   return (
@@ -115,7 +116,8 @@ export default function SignupPage() {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', position: 'relative', zIndex: 1 }}>
         <GlassCard variant="lg" style={{ width: '100%', maxWidth: '480px', padding: '2.5rem 2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ fontWeight: 900, fontSize: '1.4rem', letterSpacing: '-0.03em' }}>Plura</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={LOGO_DATA_URI} alt="Plura" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} draggable={false} />
           </div>
 
           <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
