@@ -142,7 +142,7 @@ export default function HomePage() {
                 color: 'var(--c-text-1)', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
               }}
             >
-              <UserIcon /> Entrar
+              <UserIcon /> Login
             </button>
           )
         }
