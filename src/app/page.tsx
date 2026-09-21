@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import { SearchIcon, UserIcon } from '@/components/icons'
 import { api, type Pagina } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
+import { LOGO_DATA_URI } from '@/lib/logo'
 
 function SkeletonCard() {
   return (
@@ -129,7 +130,8 @@ export default function HomePage() {
           borderBottom: '1px solid var(--c-divider)',
         }}
       >
-        <span style={{ fontWeight: 900, fontSize: '1.15rem', letterSpacing: '-0.03em' }}>Plura</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={LOGO_DATA_URI} alt="Plura" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} draggable={false} />
         <div style={{ flex: 1 }} />
         {logado ? (
           <button
@@ -159,10 +161,20 @@ export default function HomePage() {
 
       <main style={{ paddingTop: '5rem', paddingBottom: '4rem', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem 2.5rem', maxWidth: '680px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.05, margin: 0 }}>
-            Plura
-          </h1>
-          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: 'var(--c-text-2)', lineHeight: 1.55, maxWidth: '480px', margin: '0.875rem auto 0' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'clamp(0.75rem, 2vw, 1.25rem)', marginBottom: '0.875rem' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LOGO_DATA_URI}
+              alt=""
+              aria-hidden
+              draggable={false}
+              style={{ height: 'clamp(2.5rem, 6vw, 4rem)', width: 'auto', objectFit: 'contain' }}
+            />
+            <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.05, margin: 0 }}>
+              Plura
+            </h1>
+          </div>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: 'var(--c-text-2)', lineHeight: 1.55, maxWidth: '480px', margin: '0 auto' }}>
             Encontre seu lazer com acessibilidade
           </p>
         </div>
