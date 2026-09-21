@@ -2,20 +2,53 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import GlassCard from '@/components/GlassCard'
-import Input from '@/components/Input'
+import Input, { PasswordStrength } from '@/components/Input'
 import Button from '@/components/Button'
+import Grain from '@/components/Grain'
+import Footer from '@/components/Footer'
+import { EmailIcon, LockIcon, EyeIcon, UserIcon, IdIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 import { salvarSessao } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
 
-function forcaSenha(senha: string): number {
-  let pontos = 0
-  if (senha.length >= 6) pontos++
-  if (/[A-Z]/.test(senha) && /[a-z]/.test(senha)) pontos++
-  if (/\d/.test(senha) && /[^A-Za-z0-9]/.test(senha)) pontos++
-  return pontos
+function SectionLabel({ label }: { label: string }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '1.75rem 0 1.25rem' }}>
+      <span style={{ fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--c-text-blue)', letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+        {label}
+      </span>
+      <div style={{ flex: 1, height: '1px', background: 'var(--c-divider)' }} />
+    </div>
+  )
+}
+
+function SuccessModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      style={{ position: 'fixed', inset: 0, zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(4,4,15,0.72)', backdropFilter: 'blur(6px)' }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div style={{ width: '100%', maxWidth: '400px', background: 'var(--c-glass-bg-lg)', backdropFilter: 'blur(24px) saturate(1.8)', border: 'var(--c-border-lg)', borderRadius: 'var(--radius-2xl)', boxShadow: 'var(--c-shadow-lg)', padding: '2.25rem 2rem 2rem', textAlign: 'center' }}>
+        <div style={{ width: '3.5rem', height: '3.5rem', borderRadius: '50%', margin: '0 auto 1.25rem', background: 'linear-gradient(135deg,rgba(34,197,94,0.22),rgba(34,197,94,0.10))', border: '1px solid rgba(34,197,94,0.40)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Conta criada com sucesso!</h2>
+        <p style={{ fontSize: '0.9375rem', color: 'var(--c-text-2)', lineHeight: 1.6, marginBottom: '1.75rem' }}>
+          Verifique seu e-mail e clique no link de confirmação para ativar sua conta.
+        </p>
+        <Button style={{ width: '100%' }} onClick={onClose}>
+          Ir para o login
+        </Button>
+      </div>
+    </div>
+  )
 }
 
 export default function SignupPage() {
@@ -24,107 +57,173 @@ export default function SignupPage() {
   const [cpf, setCpf] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
-  const [confirmarSenha, setConfirmarSenha] = useState('')
-  const [erro, setErro] = useState('')
-  const [sucesso, setSucesso] = useState('')
+  const [confirma, setConfirma] = useState('')
+  const [showSenha, setShowSenha] = useState(false)
+  const [showConfirma, setShowConfirma] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [generalError, setGeneralError] = useState('')
 
-  const forca = forcaSenha(senha)
-  const forcaLabel = ['Fraca', 'Fraca', 'Média', 'Forte'][forca] ?? 'Fraca'
+  function validate() {
+    const e: Record<string, string> = {}
+    if (!nome.trim()) e.nome = 'Nome é obrigatório'
+    if (cpf.replace(/\D/g, '').length !== 11) e.cpf = 'CPF inválido'
+    if (!email.includes('@')) e.email = 'E-mail inválido'
+    if (senha.length < 6) e.senha = 'Mínimo 6 caracteres'
+    if (senha !== confirma) e.confirma = 'As senhas não coincidem'
+    return e
+  }
 
-  async function onSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setErro('')
-    setSucesso('')
-
-    if (!nome) return setErro('Informe seu nome completo')
-    if (cpf.replace(/\D/g, '').length !== 11) return setErro('CPF inválido')
-    if (!email.includes('@')) return setErro('Informe um e-mail válido')
-    if (senha.length < 6) return setErro('A senha deve ter ao menos 6 caracteres')
-    if (senha !== confirmarSenha) return setErro('As senhas não coincidem')
-
+    const errs = validate()
+    if (Object.keys(errs).length) {
+      setErrors(errs)
+      return
+    }
+    setErrors({})
+    setGeneralError('')
     setLoading(true)
     try {
-      const resposta = await api.signup({ email, password: senha, cpf, nome })
+      const resposta = await api.signup({ email: email.trim(), password: senha, cpf, nome: nome.trim() })
       if ('pending_email_confirmation' in resposta) {
-        setSucesso('Conta criada! Verifique seu e-mail para confirmar antes de fazer login.')
+        setShowSuccess(true)
         return
       }
       salvarSessao(resposta)
       router.push('/perfil')
-    } catch (e) {
-      setErro(e instanceof Error ? e.message : 'Não foi possível criar a conta')
+    } catch (err) {
+      setGeneralError(err instanceof Error ? err.message : 'Não foi possível criar a conta')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <main className="container" style={{ paddingTop: '3rem', maxWidth: 460, paddingBottom: '3rem' }}>
-      <GlassCard>
-        <h2 style={{ marginTop: 0 }}>Criar conta</h2>
+    <>
+      {showSuccess && (
+        <SuccessModal
+          onClose={() => {
+            setShowSuccess(false)
+            router.push('/login')
+          }}
+        />
+      )}
+      <Grain />
 
-        {erro && <p className="error-banner">{erro}</p>}
-        {sucesso && (
-          <p className="error-banner" style={{ color: 'var(--c-success)', borderColor: 'var(--c-success)', background: 'rgba(34,197,94,0.1)' }}>
-            {sucesso} <Link href="/login">Ir para o login</Link>
-          </p>
-        )}
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', position: 'relative', zIndex: 1 }}>
+        <GlassCard variant="lg" style={{ width: '100%', maxWidth: '480px', padding: '2.5rem 2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
+            <span style={{ fontWeight: 900, fontSize: '1.4rem', letterSpacing: '-0.03em' }}>Plura</span>
+          </div>
 
-        {!sucesso && (
-          <form onSubmit={onSubmit}>
-            <span className="label-mono">identificação</span>
-            <Input id="nome" label="Nome completo" value={nome} onChange={(e) => setNome(e.target.value)} />
-            <Input
-              id="cpf"
-              label="CPF"
-              value={cpf}
-              onChange={(e) => setCpf(formatarCpf(e.target.value))}
-              placeholder="000.000.000-00"
-            />
-            <Input id="email" label="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.035em', marginBottom: '0.375rem' }}>Criar conta</h1>
+            <p style={{ fontSize: '0.9375rem', color: 'var(--c-text-2)' }}>Preencha as informações abaixo</p>
+          </div>
 
-            <span className="label-mono">acesso</span>
-            <Input
-              id="senha"
-              label="Senha"
-              type="password"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-            {senha && (
-              <div style={{ marginTop: '-0.6rem', marginBottom: '1rem' }}>
-                <div className="strength-bar">
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className={`strength-seg ${
-                        i < forca ? (forca === 1 ? 'on-weak' : forca === 2 ? 'on-medium' : 'on-strong') : ''
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="label-mono">{forcaLabel}</span>
+          {generalError && (
+            <div style={{ margin: '1rem 0 0', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', fontSize: '0.875rem', color: '#f87171', textAlign: 'center' }}>
+              {generalError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} noValidate>
+            <SectionLabel label="Identificação" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <Input
+                label="Nome completo"
+                placeholder="Seu nome completo"
+                value={nome}
+                onChange={(e) => {
+                  setNome(e.target.value)
+                  setErrors((p) => ({ ...p, nome: '' }))
+                }}
+                error={errors.nome}
+                leadingIcon={<UserIcon />}
+              />
+              <Input
+                label="CPF"
+                placeholder="000.000.000-00"
+                value={cpf}
+                onChange={(e) => {
+                  setCpf(formatarCpf(e.target.value))
+                  setErrors((p) => ({ ...p, cpf: '' }))
+                }}
+                error={errors.cpf}
+                leadingIcon={<IdIcon />}
+              />
+              <Input
+                label="E-mail"
+                type="email"
+                placeholder="voce@exemplo.com"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  setErrors((p) => ({ ...p, email: '' }))
+                }}
+                error={errors.email}
+                leadingIcon={<EmailIcon />}
+              />
+            </div>
+
+            <SectionLabel label="Acesso" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <Input
+                  label="Senha"
+                  type={showSenha ? 'text' : 'password'}
+                  placeholder="Mínimo 6 caracteres"
+                  value={senha}
+                  onChange={(e) => {
+                    setSenha(e.target.value)
+                    setErrors((p) => ({ ...p, senha: '' }))
+                  }}
+                  error={errors.senha}
+                  leadingIcon={<LockIcon />}
+                  trailingIcon={
+                    <button type="button" onClick={() => setShowSenha((v) => !v)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', color: 'inherit' }}>
+                      <EyeIcon off={showSenha} />
+                    </button>
+                  }
+                />
+                <PasswordStrength password={senha} />
               </div>
-            )}
-            <Input
-              id="confirmar-senha"
-              label="Confirmar senha"
-              type="password"
-              value={confirmarSenha}
-              onChange={(e) => setConfirmarSenha(e.target.value)}
-            />
+              <Input
+                label="Confirmar senha"
+                type={showConfirma ? 'text' : 'password'}
+                placeholder="Repita a senha"
+                value={confirma}
+                onChange={(e) => {
+                  setConfirma(e.target.value)
+                  setErrors((p) => ({ ...p, confirma: '' }))
+                }}
+                error={errors.confirma}
+                leadingIcon={<LockIcon />}
+                trailingIcon={
+                  <button type="button" onClick={() => setShowConfirma((v) => !v)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', color: 'inherit' }}>
+                    <EyeIcon off={showConfirma} />
+                  </button>
+                }
+              />
+            </div>
 
-            <Button type="submit" loading={loading} style={{ width: '100%', marginTop: '0.5rem' }}>
-              Criar conta
+            <Button type="submit" size="lg" loading={loading} style={{ width: '100%', marginTop: '1.75rem' }}>
+              {loading ? 'Criando conta…' : 'Criar conta'}
             </Button>
           </form>
-        )}
 
-        <p style={{ textAlign: 'center', marginTop: '1.25rem', fontSize: '0.9rem' }}>
-          Já tem conta? <Link href="/login">Entrar</Link>
-        </p>
-      </GlassCard>
-    </main>
+          <p style={{ textAlign: 'center', fontSize: '0.9375rem', color: 'var(--c-text-2)', marginTop: '1.5rem' }}>
+            Já tem uma conta?{' '}
+            <a href="/login" style={{ color: 'var(--c-text-blue)', fontWeight: 600, textDecoration: 'none' }}>
+              Entrar →
+            </a>
+          </p>
+        </GlassCard>
+
+        <Footer />
+      </div>
+    </>
   )
 }
