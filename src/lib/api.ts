@@ -50,6 +50,19 @@ export interface AuthResponse {
   refresh_token: string
 }
 
+export interface Notificacao {
+  id: string
+  tipo: string
+  titulo: string
+  corpo: string
+  entidade_tipo: string | null
+  entidade_id: string | null
+  lida: boolean
+  lida_em: string | null
+  criada_em: string
+  metadata: Record<string, unknown>
+}
+
 export const api = {
   signup: (body: { email: string; password: string; cpf: string; nome: string }) =>
     request<AuthResponse | { message: string; pending_email_confirmation: true }>('/auth/signup', {
@@ -77,4 +90,17 @@ export const api = {
     }),
 
   minhasAvaliacoes: () => request<{ avaliacoes: Avaliacao[] }>('/me/avaliacoes'),
+
+  listarNotificacoes: (apenasNaoLidas?: boolean) =>
+    request<{ notificacoes: Notificacao[] }>(
+      apenasNaoLidas ? '/notificacoes?status=nao_lidas&limit=30' : '/notificacoes?limit=30'
+    ),
+
+  contarNaoLidas: () => request<{ total: number }>('/notificacoes/contagem-nao-lidas'),
+
+  marcarNotificacaoComoLida: (id: string) =>
+    request<void>(`/notificacoes/${id}/ler`, { method: 'PATCH' }),
+
+  marcarTodasNotificacoesComoLidas: () =>
+    request<void>('/notificacoes/marcar-todas-lidas', { method: 'PATCH' }),
 }

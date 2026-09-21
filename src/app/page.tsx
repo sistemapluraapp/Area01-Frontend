@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
+import NotificationBell from '@/components/NotificationBell'
 import { SearchIcon, UserIcon } from '@/components/icons'
 import { api, type Pagina } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
@@ -134,17 +135,20 @@ export default function HomePage() {
         <img src={LOGO_DATA_URI} alt="Plura" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} draggable={false} />
         <div style={{ flex: 1 }} />
         {logado ? (
-          <button
-            onClick={() => router.push('/perfil')}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
-              background: 'linear-gradient(135deg,#1a7aff,#0062e6)', border: 'none', borderRadius: '0.75rem',
-              color: '#fff', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(26,122,255,0.35)',
-            }}
-          >
-            <UserIcon /> Minha Área
-          </button>
+          <>
+            <NotificationBell />
+            <button
+              onClick={() => router.push('/perfil')}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
+                background: 'linear-gradient(135deg,#1a7aff,#0062e6)', border: 'none', borderRadius: '0.75rem',
+                color: '#fff', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(26,122,255,0.35)',
+              }}
+            >
+              <UserIcon /> Minha Área
+            </button>
+          </>
         ) : (
           <button
             onClick={() => router.push('/login')}

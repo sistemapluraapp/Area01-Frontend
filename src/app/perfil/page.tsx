@@ -7,6 +7,7 @@ import Input from '@/components/Input'
 import Button from '@/components/Button'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
+import NotificationBell from '@/components/NotificationBell'
 import { IdIcon, UserIcon } from '@/components/icons'
 import { api, type Usuario, type Avaliacao } from '@/lib/api'
 import { estaLogado, limparSessao } from '@/lib/auth'
@@ -77,9 +78,12 @@ export default function PerfilPage() {
                 <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)' }}>cpf {usuario?.cpf}</p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={sair}>
-              Sair
-            </Button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+              <NotificationBell />
+              <Button variant="ghost" size="sm" onClick={sair}>
+                Sair
+              </Button>
+            </div>
           </div>
 
           {erro && (
