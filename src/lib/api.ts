@@ -2,7 +2,16 @@ import { obterRefreshToken, salvarSessao, limparSessao } from './auth'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? ''
 
-export class ApiError extends Error {}
+export class ApiError extends Error {
+  status?: number
+  suspensa?: boolean
+
+  constructor(message: string, options?: { status?: number; suspensa?: boolean }) {
+    super(message)
+    this.status = options?.status
+    this.suspensa = options?.suspensa
+  }
+}
 
 function redirecionarParaLogin(): void {
   if (
@@ -59,7 +68,10 @@ async function request<T>(path: string, options: RequestInit = {}, isRetry = fal
         return request<T>(path, options, true)
       }
     }
-    throw new ApiError(data?.error ?? 'Erro inesperado ao falar com o servidor')
+    throw new ApiError(data?.error ?? 'Erro inesperado ao falar com o servidor', {
+      status: res.status,
+      suspensa: data?.suspensa === true,
+    })
   }
 
   return data as T
@@ -90,6 +102,8 @@ export interface Perfil {
   avatar_url: string | null
   cep: string | null
   endereco: string | null
+  cidade: string | null
+  uf: string | null
   complemento: string | null
   necessidades_acessibilidade: NecessidadeAcessibilidade[]
   paginas_administradas: number
@@ -205,6 +219,8 @@ export const api = {
     nome_social?: string
     cep?: string
     endereco?: string
+    cidade?: string
+    uf?: string
     complemento?: string
     necessidades_acessibilidade?: NecessidadeAcessibilidade[]
   }) => request<Perfil>('/perfil', { method: 'PUT', body: JSON.stringify(body) }),

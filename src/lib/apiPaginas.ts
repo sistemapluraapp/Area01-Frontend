@@ -107,6 +107,7 @@ export interface Empreendimento {
   facebook: string | null
   tiktok: string | null
   website: string | null
+  suspensa: boolean
   created_at: string
 }
 

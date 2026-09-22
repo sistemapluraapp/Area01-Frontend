@@ -9,7 +9,7 @@ import Button from '@/components/Button'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import { EmailIcon, LockIcon, EyeIcon } from '@/components/icons'
-import { api } from '@/lib/api'
+import { api, ApiError } from '@/lib/api'
 import { salvarSessao } from '@/lib/auth'
 import { LOGO_DATA_URI } from '@/lib/logo'
 
@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({})
+  const [suspensa, setSuspensa] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -34,12 +35,18 @@ export default function LoginPage() {
 
     setLoading(true)
     setErrors({})
+    setSuspensa(false)
     try {
       const auth = await api.login({ email: email.trim(), password })
       salvarSessao(auth)
       router.push('/perfil')
-    } catch {
-      setErrors({ general: 'E-mail ou senha incorretos' })
+    } catch (err) {
+      if (err instanceof ApiError && err.suspensa) {
+        setSuspensa(true)
+        setErrors({ general: err.message })
+      } else {
+        setErrors({ general: 'E-mail ou senha incorretos' })
+      }
     } finally {
       setLoading(false)
     }
@@ -65,7 +72,13 @@ export default function LoginPage() {
             <p style={{ fontSize: '0.9375rem', color: 'var(--c-text-2)' }}>Faça login para continuar</p>
           </div>
 
-          {errors.general && (
+          {errors.general && suspensa && (
+            <div style={{ marginBottom: '1rem', padding: '0.875rem 1rem', borderRadius: '0.75rem', background: 'rgba(245,158,11,0.16)', border: '1px solid rgba(245,158,11,0.45)', fontSize: '0.875rem', color: '#f59e0b', textAlign: 'center', fontWeight: 700 }}>
+              {errors.general}
+            </div>
+          )}
+
+          {errors.general && !suspensa && (
             <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', fontSize: '0.875rem', color: '#f87171', textAlign: 'center' }}>
               {errors.general}
             </div>
@@ -81,6 +94,7 @@ export default function LoginPage() {
                 onChange={(e) => {
                   setEmail(e.target.value)
                   setErrors((p) => ({ ...p, email: undefined, general: undefined }))
+                  setSuspensa(false)
                 }}
                 error={errors.email}
                 leadingIcon={<EmailIcon />}
@@ -93,6 +107,7 @@ export default function LoginPage() {
                 onChange={(e) => {
                   setPassword(e.target.value)
                   setErrors((p) => ({ ...p, password: undefined, general: undefined }))
+                  setSuspensa(false)
                 }}
                 error={errors.password}
                 leadingIcon={<LockIcon />}

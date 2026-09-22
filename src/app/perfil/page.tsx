@@ -373,8 +373,10 @@ export default function PerfilPage() {
               >
                 <div
                   style={{
+                    position: 'relative',
                     aspectRatio: '1',
                     width: '100%',
+                    filter: emp.suspensa ? 'grayscale(1)' : undefined,
                     background: emp.capa_url
                       ? `url(${emp.capa_url}) center/cover no-repeat`
                       : 'linear-gradient(135deg,#1a7aff,#0062e6)',
@@ -387,6 +389,27 @@ export default function PerfilPage() {
                     <span style={{ fontSize: '2rem', fontWeight: 800, color: 'rgba(255,255,255,0.92)' }}>
                       {emp.nome.trim()[0]?.toUpperCase() ?? '?'}
                     </span>
+                  )}
+                  {emp.suspensa && (
+                    <div style={{ position: 'absolute', top: '0.625rem', left: '0.625rem' }}>
+                      <span
+                        style={{
+                          fontSize: '0.6875rem',
+                          fontWeight: 700,
+                          fontFamily: 'var(--font-mono)',
+                          letterSpacing: '0.08em',
+                          textTransform: 'uppercase',
+                          background: 'rgba(239,68,68,0.85)',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255,255,255,0.18)',
+                          borderRadius: '9999px',
+                          padding: '0.25rem 0.625rem',
+                          color: '#fff',
+                        }}
+                      >
+                        Suspensa
+                      </span>
+                    </div>
                   )}
                 </div>
                 <div style={{ padding: '0.75rem 0.875rem' }}>

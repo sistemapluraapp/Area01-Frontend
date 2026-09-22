@@ -431,6 +431,11 @@ export default function EmpreendimentoModal({
                           {CATEGORIA_LABEL[detalhe.categoria]}
                         </span>
                       )}
+                      {detalhe.suspensa && (
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.7rem', borderRadius: '9999px', background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.35)' }}>
+                          Suspensa
+                        </span>
+                      )}
                     </div>
                     {(detalhe.endereco || detalhe.cidade) && (
                       <p style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.9375rem', color: 'var(--c-text-3)', margin: '0 0 0.625rem' }}>

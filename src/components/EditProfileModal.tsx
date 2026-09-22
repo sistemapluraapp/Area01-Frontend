@@ -39,6 +39,8 @@ export default function EditProfileModal({
   const [nomeSocial, setNomeSocial] = useState(perfil.nome_social ?? '')
   const [cep, setCep] = useState(perfil.cep ?? '')
   const [endereco, setEndereco] = useState(perfil.endereco ?? '')
+  const [cidade, setCidade] = useState(perfil.cidade ?? '')
+  const [uf, setUf] = useState(perfil.uf ?? '')
   const [complemento, setComplemento] = useState(perfil.complemento ?? '')
   const [acessibilidade, setAcessibilidade] = useState<NecessidadeAcessibilidade[]>(
     perfil.necessidades_acessibilidade ?? []
@@ -62,6 +64,8 @@ export default function EditProfileModal({
           .filter(Boolean)
           .join(', ')
         if (partes) setEndereco(partes)
+        if (data.localidade) setCidade(data.localidade)
+        if (data.uf) setUf(data.uf)
       }
     } catch {
       // busca de CEP é apenas um auxílio; falha silenciosa não bloqueia o preenchimento manual
@@ -84,6 +88,8 @@ export default function EditProfileModal({
         nome_social: nomeSocial.trim(),
         cep: cep.trim(),
         endereco: endereco.trim(),
+        cidade: cidade.trim(),
+        uf: uf.trim(),
         complemento: complemento.trim(),
         necessidades_acessibilidade: acessibilidade,
       })
