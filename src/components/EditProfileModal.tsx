@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import GlassCard from './GlassCard'
 import Input from './Input'
 import Button from './Button'
-import AccessibilityChips from './AccessibilityChips'
+import AccessibilityTree from './AccessibilityTree'
 import { CloseIcon, EmailIcon, MapPinIcon, SmileIcon, UserIcon } from './icons'
 import { api, type NecessidadeAcessibilidade, type Perfil } from '@/lib/api'
 
@@ -223,7 +223,7 @@ export default function EditProfileModal({
 
             <section style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               <SectionLabel label="Acessibilidade" />
-              <AccessibilityChips value={acessibilidade} onChange={setAcessibilidade} />
+              <AccessibilityTree value={acessibilidade} onChange={setAcessibilidade} />
             </section>
 
             <div style={{ display: 'flex', gap: '0.75rem' }}>

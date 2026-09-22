@@ -73,12 +73,23 @@ export interface Usuario {
 }
 
 export type NecessidadeAcessibilidade =
-  | 'visual'
-  | 'auditiva'
-  | 'motora'
-  | 'intelectual'
-  | 'tea'
-  | 'neurodivergencia'
+  | 'mobilidade_cadeira_rodas'
+  | 'mobilidade_deslocamento_reduzido'
+  | 'mobilidade_amputacao_maos_bracos'
+  | 'mobilidade_amputacao_pes_pernas'
+  | 'mobilidade_bengala_muleta'
+  | 'visao_cego'
+  | 'visao_baixa_visao'
+  | 'visao_daltonismo'
+  | 'visao_miopia_severa'
+  | 'audicao_surdez_total'
+  | 'audicao_baixa_audicao'
+  | 'audicao_aparelho_auditivo'
+  | 'audicao_interprete_libras'
+  | 'cognitivo_tea'
+  | 'cognitivo_tdah'
+  | 'cognitivo_deficiencia_intelectual'
+  | 'cognitivo_sobrecarga_sensorial'
   | 'nenhuma'
 
 export interface Perfil {
@@ -173,6 +184,12 @@ export interface AuthResponse {
   refresh_token: string
 }
 
+export interface Favorito {
+  id: string
+  created_at: string
+  paginas: Pagina
+}
+
 export interface Notificacao {
   id: string
   tipo: string
@@ -240,4 +257,10 @@ export const api = {
 
   marcarTodasNotificacoesComoLidas: () =>
     request<void>('/notificacoes/marcar-todas-lidas', { method: 'PATCH' }),
+
+  listarFavoritos: () => request<{ favoritos: Favorito[] }>('/favoritos'),
+
+  favoritar: (paginaId: string) => request<void>(`/favoritos/${paginaId}`, { method: 'POST' }),
+
+  desfavoritar: (paginaId: string) => request<void>(`/favoritos/${paginaId}`, { method: 'DELETE' }),
 }
