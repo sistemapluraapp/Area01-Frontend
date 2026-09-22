@@ -125,6 +125,7 @@ export interface VinculoPagina {
   usuario_id: string
   papel: 'administrador' | 'colaborador'
   created_at: string
+  usuarios: { nome: string } | null
 }
 
 export interface EmpreendimentoDetalhado extends Empreendimento {

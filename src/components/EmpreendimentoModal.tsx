@@ -644,7 +644,7 @@ export default function EmpreendimentoModal({
                                   <div key={v.id} style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.5rem 0.625rem', borderRadius: '0.625rem', background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)' }}>
                                     <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg,rgba(26,122,255,0.3),rgba(0,98,230,0.2))', border: '1px solid rgba(26,122,255,0.35)' }} />
                                     <p style={{ flex: 1, margin: 0, fontSize: '0.8125rem', color: 'var(--c-text-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                      usuário {v.usuario_id.slice(0, 8)}…
+                                      {v.usuarios?.nome ?? `usuário ${v.usuario_id.slice(0, 8)}…`}
                                     </p>
                                     <button
                                       onClick={() => removerColaborador(v.id)}
