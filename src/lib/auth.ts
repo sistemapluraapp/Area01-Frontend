@@ -29,6 +29,11 @@ export function obterUsuarioSalvo(): AuthResponse['user'] | null {
   }
 }
 
+export function obterToken(): string | null {
+  if (typeof window === 'undefined') return null
+  return localStorage.getItem(TOKEN_KEY)
+}
+
 export function obterRefreshToken(): string | null {
   if (typeof window === 'undefined') return null
   return localStorage.getItem(REFRESH_KEY)
