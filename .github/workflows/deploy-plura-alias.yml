@@ -1,0 +1,25 @@
+name: Deploy Plura Alias
+
+on:
+  push:
+    branches: [main, claude/great-franklin-kisti3]
+    paths:
+      - 'redirect-plura/**'
+      - '.github/workflows/deploy-plura-alias.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create plura --production-branch=main
+        continue-on-error: true
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy redirect-plura --project-name=plura --branch=main --commit-dirty=true
