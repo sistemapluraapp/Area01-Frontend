@@ -6,8 +6,9 @@ import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
-import { SearchIcon, UserIcon } from '@/components/icons'
-import { api, type Categoria, type Pagina } from '@/lib/api'
+import AcessibilidadeFiltro from '@/components/AcessibilidadeFiltro'
+import { HeartIcon, SearchIcon, UserIcon } from '@/components/icons'
+import { api, type Categoria, type Pagina, type RecursoAcessibilidade } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 import { LOGO_DATA_URI } from '@/lib/logo'
 
@@ -39,7 +40,19 @@ function SkeletonCard() {
   )
 }
 
-function PaginaGridCard({ pagina, onClick }: { pagina: Pagina; onClick: () => void }) {
+function PaginaGridCard({
+  pagina,
+  onClick,
+  logado,
+  favoritado,
+  onToggleFavorito,
+}: {
+  pagina: Pagina
+  onClick: () => void
+  logado: boolean
+  favoritado: boolean
+  onToggleFavorito: () => void
+}) {
   const [hovered, setHovered] = useState(false)
   const initials = pagina.nome.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
   const categoriaLabel = pagina.categoria ? CATEGORIA_LABEL[pagina.categoria] : null
@@ -108,6 +121,34 @@ function PaginaGridCard({ pagina, onClick }: { pagina: Pagina; onClick: () => vo
             </span>
           </div>
         )}
+        {logado && (
+          <button
+            type="button"
+            aria-label={favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            onClick={(e) => {
+              e.stopPropagation()
+              onToggleFavorito()
+            }}
+            style={{
+              position: 'absolute',
+              top: '0.625rem',
+              right: '0.625rem',
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'rgba(0,0,0,0.52)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: favoritado ? '#ef4444' : '#fff',
+            }}
+          >
+            <HeartIcon filled={favoritado} />
+          </button>
+        )}
       </div>
       <div style={{ padding: '0.875rem 1rem 1rem' }}>
         <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text-1)', marginBottom: '0.25rem', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -125,20 +166,55 @@ export default function HomePage() {
   const [termo, setTermo] = useState('')
   const [resultados, setResultados] = useState<Pagina[]>([])
   const [loading, setLoading] = useState(true)
+  const [filtroAcessibilidade, setFiltroAcessibilidade] = useState<RecursoAcessibilidade[]>([])
+  const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    setLogado(estaLogado())
+    const usuarioLogado = estaLogado()
+    setLogado(usuarioLogado)
     api
       .buscarPaginas('')
       .then(({ resultados }) => setResultados(resultados))
       .finally(() => setLoading(false))
+
+    if (usuarioLogado) {
+      api
+        .listarFavoritos()
+        .then(({ favoritos }) => setFavoritosIds(new Set(favoritos.map((f) => f.paginas.id))))
+        .catch(() => {})
+    }
   }, [])
+
+  async function alternarFavorito(paginaId: string) {
+    const jaFavoritado = favoritosIds.has(paginaId)
+    setFavoritosIds((atual) => {
+      const proximo = new Set(atual)
+      if (jaFavoritado) proximo.delete(paginaId)
+      else proximo.add(paginaId)
+      return proximo
+    })
+    try {
+      if (jaFavoritado) await api.desfavoritar(paginaId)
+      else await api.favoritar(paginaId)
+    } catch {
+      setFavoritosIds((atual) => {
+        const proximo = new Set(atual)
+        if (jaFavoritado) proximo.add(paginaId)
+        else proximo.delete(paginaId)
+        return proximo
+      })
+    }
+  }
 
   const filtradas = useMemo(() => {
     const t = termo.trim().toLowerCase()
-    if (!t) return resultados
-    return resultados.filter((p) => p.nome.toLowerCase().includes(t))
-  }, [termo, resultados])
+    let lista = resultados
+    if (t) lista = lista.filter((p) => p.nome.toLowerCase().includes(t))
+    if (filtroAcessibilidade.length > 0) {
+      lista = lista.filter((p) => filtroAcessibilidade.every((r) => p.recursos_acessibilidade.includes(r)))
+    }
+    return lista
+  }, [termo, resultados, filtroAcessibilidade])
 
   return (
     <>
@@ -217,6 +293,10 @@ export default function HomePage() {
           </div>
         </div>
 
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.5rem 1.5rem' }}>
+          <AcessibilidadeFiltro value={filtroAcessibilidade} onChange={setFiltroAcessibilidade} />
+        </div>
+
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
           {!loading && (
             <p style={{ fontSize: '0.875rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)', marginBottom: '1.25rem' }}>
@@ -242,7 +322,14 @@ export default function HomePage() {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '1rem' }}>
               {filtradas.map((pagina) => (
-                <PaginaGridCard key={pagina.id} pagina={pagina} onClick={() => router.push(`/pagina?id=${pagina.id}`)} />
+                <PaginaGridCard
+                  key={pagina.id}
+                  pagina={pagina}
+                  onClick={() => router.push(`/pagina?id=${pagina.id}`)}
+                  logado={logado}
+                  favoritado={favoritosIds.has(pagina.id)}
+                  onToggleFavorito={() => alternarFavorito(pagina.id)}
+                />
               ))}
             </div>
           )}
