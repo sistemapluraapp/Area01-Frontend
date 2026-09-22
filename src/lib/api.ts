@@ -107,11 +107,53 @@ export interface Colaboracao {
   }
 }
 
+export type Categoria =
+  | 'hotel'
+  | 'hostel'
+  | 'pousada'
+  | 'bar'
+  | 'restaurante'
+  | 'cafe'
+  | 'espaco_eventos'
+  | 'passeio_turistico'
+  | 'museu'
+  | 'parque'
+  | 'academia'
+  | 'clinica'
+  | 'outros'
+
+export type RecursoAcessibilidade =
+  | 'rampa'
+  | 'elevador'
+  | 'banheiro_adaptado'
+  | 'vaga_pcd'
+  | 'piso_tatil'
+  | 'libras'
+  | 'braille'
+  | 'cadeira_rodas'
+  | 'audiodescricao'
+  | 'entrada_acessivel'
+
 export interface Pagina {
   id: string
   tipo: 'privada' | 'publica'
   nome: string
   descricao: string | null
+  categoria: Categoria | null
+  cep: string | null
+  endereco: string | null
+  cidade: string | null
+  uf: string | null
+  complemento: string | null
+  logo_url: string | null
+  capa_url: string | null
+  fotos_urls: string[]
+  recursos_acessibilidade: RecursoAcessibilidade[]
+  youtube: string | null
+  instagram: string | null
+  facebook: string | null
+  tiktok: string | null
+  website: string | null
   created_at: string
 }
 

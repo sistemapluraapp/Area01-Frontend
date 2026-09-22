@@ -7,9 +7,25 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import { SearchIcon, UserIcon } from '@/components/icons'
-import { api, type Pagina } from '@/lib/api'
+import { api, type Categoria, type Pagina } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 import { LOGO_DATA_URI } from '@/lib/logo'
+
+const CATEGORIA_LABEL: Record<Categoria, string> = {
+  hotel: 'Hotel',
+  hostel: 'Hostel',
+  pousada: 'Pousada',
+  bar: 'Bar',
+  restaurante: 'Restaurante',
+  cafe: 'Café',
+  espaco_eventos: 'Espaço de eventos',
+  passeio_turistico: 'Passeio turístico',
+  museu: 'Museu',
+  parque: 'Parque',
+  academia: 'Academia',
+  clinica: 'Clínica',
+  outros: 'Outros',
+}
 
 function SkeletonCard() {
   return (
@@ -26,6 +42,7 @@ function SkeletonCard() {
 function PaginaGridCard({ pagina, onClick }: { pagina: Pagina; onClick: () => void }) {
   const [hovered, setHovered] = useState(false)
   const initials = pagina.nome.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
+  const categoriaLabel = pagina.categoria ? CATEGORIA_LABEL[pagina.categoria] : null
 
   return (
     <div
@@ -49,7 +66,7 @@ function PaginaGridCard({ pagina, onClick }: { pagina: Pagina; onClick: () => vo
       <div
         style={{
           height: '120px',
-          background: 'linear-gradient(135deg,#1a7aff,#0062e6)',
+          background: pagina.capa_url ? undefined : 'linear-gradient(135deg,#1a7aff,#0062e6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -58,28 +75,39 @@ function PaginaGridCard({ pagina, onClick }: { pagina: Pagina; onClick: () => vo
           color: 'rgba(255,255,255,0.9)',
           letterSpacing: '-0.04em',
           position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        {initials}
-        <div style={{ position: 'absolute', top: '0.625rem', left: '0.625rem' }}>
-          <span
-            style={{
-              fontSize: '0.6875rem',
-              fontWeight: 700,
-              fontFamily: 'var(--font-mono)',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              background: 'rgba(0,0,0,0.52)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.18)',
-              borderRadius: '9999px',
-              padding: '0.25rem 0.625rem',
-              color: '#fff',
-            }}
-          >
-            {pagina.tipo}
-          </span>
-        </div>
+        {pagina.capa_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={pagina.capa_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : pagina.logo_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={pagina.logo_url} alt="" style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '0.75rem' }} />
+        ) : (
+          initials
+        )}
+        {categoriaLabel && (
+          <div style={{ position: 'absolute', top: '0.625rem', left: '0.625rem' }}>
+            <span
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 700,
+                fontFamily: 'var(--font-mono)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                background: 'rgba(0,0,0,0.52)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255,255,255,0.18)',
+                borderRadius: '9999px',
+                padding: '0.25rem 0.625rem',
+                color: '#fff',
+              }}
+            >
+              {categoriaLabel}
+            </span>
+          </div>
+        )}
       </div>
       <div style={{ padding: '0.875rem 1rem 1rem' }}>
         <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text-1)', marginBottom: '0.25rem', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
