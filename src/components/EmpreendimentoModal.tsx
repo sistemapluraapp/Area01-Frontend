@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type CSSProperties, type
 import GlassCard from './GlassCard'
 import Input from './Input'
 import Button from './Button'
-import RecursosAcessibilidadeChips, { RECURSOS_ACESSIBILIDADE_LABELS } from './RecursosAcessibilidadeChips'
+import RecursosAcessibilidadeChips, { useRecursosAcessibilidadeLabels } from './RecursosAcessibilidadeChips'
 import { CameraIcon, CloseIcon, EditIcon, MapPinIcon, PlusIcon } from './icons'
 import {
   apiPaginas,
@@ -135,6 +135,7 @@ export default function EmpreendimentoModal({
   const [tiktok, setTiktok] = useState('')
   const [website, setWebsite] = useState('')
   const [recursos, setRecursos] = useState<RecursoAcessibilidade[]>([])
+  const recursosAcessibilidadeLabels = useRecursosAcessibilidadeLabels()
 
   const logoInputRef = useRef<HTMLInputElement>(null)
   const capaInputRef = useRef<HTMLInputElement>(null)
@@ -601,7 +602,7 @@ export default function EmpreendimentoModal({
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                               {detalhe.recursos_acessibilidade.map((r) => (
                                 <span key={r} style={{ padding: '0.4rem 0.875rem', borderRadius: '9999px', fontSize: '0.8125rem', fontWeight: 500, background: 'rgba(26,122,255,0.12)', border: '1px solid rgba(26,122,255,0.25)', color: '#6aadff' }}>
-                                  {RECURSOS_ACESSIBILIDADE_LABELS[r] ?? r}
+                                  {recursosAcessibilidadeLabels[r] ?? r}
                                 </span>
                               ))}
                             </div>

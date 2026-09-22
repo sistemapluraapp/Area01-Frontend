@@ -85,17 +85,7 @@ export type Categoria =
   | 'clinica'
   | 'outros'
 
-export type RecursoAcessibilidade =
-  | 'rampa'
-  | 'elevador'
-  | 'banheiro_adaptado'
-  | 'vaga_pcd'
-  | 'piso_tatil'
-  | 'libras'
-  | 'braille'
-  | 'cadeira_rodas'
-  | 'audiodescricao'
-  | 'entrada_acessivel'
+export type RecursoAcessibilidade = string
 
 export interface Empreendimento {
   id: string

@@ -1,20 +1,24 @@
 'use client'
 
-import { useMemo } from 'react'
-import type { RecursoAcessibilidade } from '@/lib/apiPaginas'
+import type { NecessidadeAcessibilidade } from '@/lib/api'
 import { useFiltrosAcessibilidade } from '@/lib/useFiltrosAcessibilidade'
 
-export default function RecursosAcessibilidadeChips({
+export default function AccessibilityChips({
   value,
   onChange,
 }: {
-  value: RecursoAcessibilidade[]
-  onChange: (value: RecursoAcessibilidade[]) => void
+  value: NecessidadeAcessibilidade[]
+  onChange: (value: NecessidadeAcessibilidade[]) => void
 }) {
-  const { recursosLocal, carregando } = useFiltrosAcessibilidade()
+  const { necessidadesPessoal, carregando } = useFiltrosAcessibilidade()
 
-  function alternar(opcao: RecursoAcessibilidade) {
-    onChange(value.includes(opcao) ? value.filter((v) => v !== opcao) : [...value, opcao])
+  function alternar(opcao: NecessidadeAcessibilidade) {
+    if (opcao === 'nenhuma') {
+      onChange(value.includes('nenhuma') ? [] : ['nenhuma'])
+      return
+    }
+    const semNenhuma = value.filter((v) => v !== 'nenhuma')
+    onChange(semNenhuma.includes(opcao) ? semNenhuma.filter((v) => v !== opcao) : [...semNenhuma, opcao])
   }
 
   if (carregando) {
@@ -28,7 +32,7 @@ export default function RecursosAcessibilidadeChips({
   return (
     <div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-        {recursosLocal.map((o) => {
+        {necessidadesPessoal.map((o) => {
           const ativo = value.includes(o.codigo)
           return (
             <button
@@ -61,13 +65,5 @@ export default function RecursosAcessibilidadeChips({
         múltipla escolha
       </p>
     </div>
-  )
-}
-
-export function useRecursosAcessibilidadeLabels(): Record<string, string> {
-  const { recursosLocal } = useFiltrosAcessibilidade()
-  return useMemo(
-    () => recursosLocal.reduce((acc, o) => ({ ...acc, [o.codigo]: o.rotulo }), {} as Record<string, string>),
-    [recursosLocal]
   )
 }
