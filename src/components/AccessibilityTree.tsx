@@ -1,58 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { NecessidadeAcessibilidade } from '@/lib/api'
+import { useFiltrosAcessibilidade } from '@/lib/useFiltrosAcessibilidade'
 import { ChevronDownIcon } from './icons'
 
-type Categoria = {
-  id: string
-  label: string
-  itens: { value: NecessidadeAcessibilidade; label: string }[]
+const CATEGORIA_LABEL: Record<string, string> = {
+  mobilidade: 'Mobilidade',
+  visao: 'Visão',
+  audicao: 'Audição',
+  cognitivo: 'Cognitivo / Neurodivergência',
+  geral: 'Geral',
 }
-
-const CATEGORIAS: Categoria[] = [
-  {
-    id: 'mobilidade',
-    label: 'Mobilidade',
-    itens: [
-      { value: 'mobilidade_cadeira_rodas', label: 'Uso de cadeira de rodas' },
-      { value: 'mobilidade_deslocamento_reduzido', label: 'Deslocamento reduzido' },
-      { value: 'mobilidade_amputacao_maos_bracos', label: 'Amputação de mãos/braços' },
-      { value: 'mobilidade_amputacao_pes_pernas', label: 'Amputação de pés/pernas' },
-      { value: 'mobilidade_bengala_muleta', label: 'Uso de bengala ou muleta' },
-    ],
-  },
-  {
-    id: 'visao',
-    label: 'Visão',
-    itens: [
-      { value: 'visao_cego', label: 'Cegueira' },
-      { value: 'visao_baixa_visao', label: 'Baixa visão' },
-      { value: 'visao_daltonismo', label: 'Daltonismo' },
-      { value: 'visao_miopia_severa', label: 'Miopia severa' },
-    ],
-  },
-  {
-    id: 'audicao',
-    label: 'Audição',
-    itens: [
-      { value: 'audicao_surdez_total', label: 'Surdez total' },
-      { value: 'audicao_baixa_audicao', label: 'Baixa audição' },
-      { value: 'audicao_aparelho_auditivo', label: 'Uso de aparelho auditivo' },
-      { value: 'audicao_interprete_libras', label: 'Preciso de intérprete de Libras' },
-    ],
-  },
-  {
-    id: 'cognitivo',
-    label: 'Cognitivo / Neurodivergência',
-    itens: [
-      { value: 'cognitivo_tea', label: 'TEA (Autismo)' },
-      { value: 'cognitivo_tdah', label: 'TDAH' },
-      { value: 'cognitivo_deficiencia_intelectual', label: 'Deficiência intelectual' },
-      { value: 'cognitivo_sobrecarga_sensorial', label: 'Sensibilidade a estímulos sensoriais' },
-    ],
-  },
-]
 
 export default function AccessibilityTree({
   value,
@@ -61,13 +20,25 @@ export default function AccessibilityTree({
   value: NecessidadeAcessibilidade[]
   onChange: (value: NecessidadeAcessibilidade[]) => void
 }) {
-  const [expandidas, setExpandidas] = useState<Record<string, boolean>>(() => {
-    const iniciais: Record<string, boolean> = {}
-    for (const cat of CATEGORIAS) {
-      iniciais[cat.id] = cat.itens.some((item) => value.includes(item.value))
+  const { necessidadesPessoal, carregando } = useFiltrosAcessibilidade()
+
+  const categorias = useMemo(() => {
+    const grupos: { id: string; label: string; itens: { value: string; label: string }[] }[] = []
+    for (const item of necessidadesPessoal) {
+      if (item.categoria === 'geral') continue
+      let grupo = grupos.find((g) => g.id === item.categoria)
+      if (!grupo) {
+        grupo = { id: item.categoria, label: CATEGORIA_LABEL[item.categoria] ?? item.categoria, itens: [] }
+        grupos.push(grupo)
+      }
+      grupo.itens.push({ value: item.codigo, label: item.rotulo })
     }
-    return iniciais
-  })
+    return grupos
+  }, [necessidadesPessoal])
+
+  const nenhuma = useMemo(() => necessidadesPessoal.find((item) => item.codigo === 'nenhuma'), [necessidadesPessoal])
+
+  const [expandidas, setExpandidas] = useState<Record<string, boolean>>({})
 
   const nenhumaAtiva = value.includes('nenhuma')
 
@@ -84,31 +55,41 @@ export default function AccessibilityTree({
     onChange(semNenhuma.includes(item) ? semNenhuma.filter((v) => v !== item) : [...semNenhuma, item])
   }
 
+  if (carregando) {
+    return (
+      <p style={{ fontSize: '0.75rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)' }}>
+        carregando…
+      </p>
+    )
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-      <button
-        type="button"
-        onClick={alternarNenhuma}
-        style={{
-          alignSelf: 'flex-start',
-          padding: '0.4rem 0.9375rem',
-          borderRadius: '9999px',
-          fontSize: '0.8125rem',
-          fontWeight: 600,
-          fontFamily: 'inherit',
-          cursor: 'pointer',
-          border: nenhumaAtiva ? '1px solid rgba(26,122,255,0.65)' : '1px solid var(--c-input-border)',
-          background: nenhumaAtiva
-            ? 'linear-gradient(135deg,rgba(26,122,255,0.25),rgba(0,98,230,0.18))'
-            : 'var(--c-glass-bg-sm)',
-          color: nenhumaAtiva ? '#6aadff' : 'var(--c-text-2)',
-          boxShadow: nenhumaAtiva ? '0 0 12px rgba(26,122,255,0.18)' : 'none',
-          transition: 'all 150ms ease',
-        }}
-      >
-        {nenhumaAtiva && <span style={{ marginRight: '0.3rem', fontSize: '0.625rem' }}>✓</span>}
-        Nenhuma necessidade específica
-      </button>
+      {nenhuma && (
+        <button
+          type="button"
+          onClick={alternarNenhuma}
+          style={{
+            alignSelf: 'flex-start',
+            padding: '0.4rem 0.9375rem',
+            borderRadius: '9999px',
+            fontSize: '0.8125rem',
+            fontWeight: 600,
+            fontFamily: 'inherit',
+            cursor: 'pointer',
+            border: nenhumaAtiva ? '1px solid rgba(26,122,255,0.65)' : '1px solid var(--c-input-border)',
+            background: nenhumaAtiva
+              ? 'linear-gradient(135deg,rgba(26,122,255,0.25),rgba(0,98,230,0.18))'
+              : 'var(--c-glass-bg-sm)',
+            color: nenhumaAtiva ? '#6aadff' : 'var(--c-text-2)',
+            boxShadow: nenhumaAtiva ? '0 0 12px rgba(26,122,255,0.18)' : 'none',
+            transition: 'all 150ms ease',
+          }}
+        >
+          {nenhumaAtiva && <span style={{ marginRight: '0.3rem', fontSize: '0.625rem' }}>✓</span>}
+          {nenhuma.rotulo}
+        </button>
+      )}
 
       <div
         style={{
@@ -120,9 +101,9 @@ export default function AccessibilityTree({
           transition: 'opacity 150ms ease',
         }}
       >
-        {CATEGORIAS.map((cat) => {
+        {categorias.map((cat) => {
           const selecionadasNaCategoria = cat.itens.filter((item) => value.includes(item.value)).length
-          const aberta = expandidas[cat.id]
+          const aberta = expandidas[cat.id] !== undefined ? expandidas[cat.id] : selecionadasNaCategoria > 0
           return (
             <div
               key={cat.id}

@@ -1,39 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { RecursoAcessibilidade } from '@/lib/api'
+import { useFiltrosAcessibilidade } from '@/lib/useFiltrosAcessibilidade'
 import { ChevronDownIcon, FilterIcon } from './icons'
 
-type Grupo = {
-  id: string
-  label: string
-  itens: { value: RecursoAcessibilidade; label: string }[]
+const GRUPO_LABEL: Record<string, string> = {
+  mobilidade: 'Mobilidade',
+  sensorial: 'Sensorial',
 }
-
-const GRUPOS: Grupo[] = [
-  {
-    id: 'mobilidade',
-    label: 'Mobilidade',
-    itens: [
-      { value: 'rampa', label: 'Rampa de acesso' },
-      { value: 'elevador', label: 'Elevador' },
-      { value: 'banheiro_adaptado', label: 'Banheiro adaptado' },
-      { value: 'vaga_pcd', label: 'Vaga PCD' },
-      { value: 'piso_tatil', label: 'Piso tátil' },
-      { value: 'cadeira_rodas', label: 'Cadeira de rodas' },
-      { value: 'entrada_acessivel', label: 'Entrada acessível' },
-    ],
-  },
-  {
-    id: 'sensorial',
-    label: 'Sensorial',
-    itens: [
-      { value: 'libras', label: 'Libras' },
-      { value: 'braille', label: 'Braille' },
-      { value: 'audiodescricao', label: 'Audiodescrição' },
-    ],
-  },
-]
 
 export default function AcessibilidadeFiltro({
   value,
@@ -42,11 +17,27 @@ export default function AcessibilidadeFiltro({
   value: RecursoAcessibilidade[]
   onChange: (value: RecursoAcessibilidade[]) => void
 }) {
+  const { recursosLocal, carregando } = useFiltrosAcessibilidade()
   const [aberto, setAberto] = useState(false)
+
+  const grupos = useMemo(() => {
+    const lista: { id: string; label: string; itens: { value: string; label: string }[] }[] = []
+    for (const item of recursosLocal) {
+      let grupo = lista.find((g) => g.id === item.categoria)
+      if (!grupo) {
+        grupo = { id: item.categoria, label: GRUPO_LABEL[item.categoria] ?? item.categoria, itens: [] }
+        lista.push(grupo)
+      }
+      grupo.itens.push({ value: item.codigo, label: item.rotulo })
+    }
+    return lista
+  }, [recursosLocal])
 
   function alternar(item: RecursoAcessibilidade) {
     onChange(value.includes(item) ? value.filter((v) => v !== item) : [...value, item])
   }
+
+  if (carregando) return null
 
   return (
     <div style={{ background: 'var(--c-glass-bg)', backdropFilter: 'blur(20px)', border: 'var(--c-border)', borderRadius: '1.25rem', boxShadow: 'var(--c-shadow-md)', overflow: 'hidden' }}>
@@ -99,7 +90,7 @@ export default function AcessibilidadeFiltro({
 
       {aberto && (
         <div style={{ padding: '0 1.25rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-          {GRUPOS.map((grupo) => (
+          {grupos.map((grupo) => (
             <div key={grupo.id}>
               <p style={{ margin: '0 0 0.5rem', fontSize: '0.6875rem', fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                 {grupo.label}

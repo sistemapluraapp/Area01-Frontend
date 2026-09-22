@@ -7,7 +7,7 @@ import Button from '@/components/Button'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import { ArrowLeftIcon, CloseIcon, HeartIcon, MapPinIcon } from '@/components/icons'
-import { RECURSOS_ACESSIBILIDADE_LABELS } from '@/components/RecursosAcessibilidadeChips'
+import { useRecursosAcessibilidadeLabels } from '@/components/RecursosAcessibilidadeChips'
 import { api, type Avaliacao, type Categoria, type Pagina } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 
@@ -77,6 +77,7 @@ function PerfilEmpreendimento({ pagina }: { pagina: Pagina }) {
   const [fotoAmpliada, setFotoAmpliada] = useState<string | null>(null)
   const gradiente = gradientePor(pagina.categoria)
   const inicial = pagina.nome.trim()[0]?.toUpperCase() ?? '?'
+  const recursosAcessibilidadeLabels = useRecursosAcessibilidadeLabels()
 
   return (
     <>
@@ -182,7 +183,7 @@ function PerfilEmpreendimento({ pagina }: { pagina: Pagina }) {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                   {pagina.recursos_acessibilidade.map((r) => (
                     <span key={r} style={{ padding: '0.4rem 0.875rem', borderRadius: '9999px', fontSize: '0.8125rem', fontWeight: 500, background: 'rgba(26,122,255,0.12)', border: '1px solid rgba(26,122,255,0.25)', color: '#6aadff' }}>
-                      {RECURSOS_ACESSIBILIDADE_LABELS[r] ?? r}
+                      {recursosAcessibilidadeLabels[r] ?? r}
                     </span>
                   ))}
                 </div>

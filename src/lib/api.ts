@@ -108,11 +108,43 @@ export interface Colaboracao {
   }
 }
 
+export type Categoria =
+  | 'hotel'
+  | 'hostel'
+  | 'pousada'
+  | 'bar'
+  | 'restaurante'
+  | 'cafe'
+  | 'espaco_eventos'
+  | 'passeio_turistico'
+  | 'museu'
+  | 'parque'
+  | 'academia'
+  | 'clinica'
+  | 'outros'
+
+export type RecursoAcessibilidade = string
+
 export interface Pagina {
   id: string
   tipo: 'privada' | 'publica'
   nome: string
   descricao: string | null
+  categoria: Categoria | null
+  cep: string | null
+  endereco: string | null
+  cidade: string | null
+  uf: string | null
+  complemento: string | null
+  logo_url: string | null
+  capa_url: string | null
+  fotos_urls: string[]
+  recursos_acessibilidade: RecursoAcessibilidade[]
+  youtube: string | null
+  instagram: string | null
+  facebook: string | null
+  tiktok: string | null
+  website: string | null
   created_at: string
 }
 
@@ -130,6 +162,12 @@ export interface AuthResponse {
   user: { id: string; email: string; nome?: string }
   access_token: string
   refresh_token: string
+}
+
+export interface Favorito {
+  id: string
+  created_at: string
+  paginas: Pagina
 }
 
 export interface Notificacao {
@@ -199,6 +237,12 @@ export const api = {
 
   marcarTodasNotificacoesComoLidas: () =>
     request<void>('/notificacoes/marcar-todas-lidas', { method: 'PATCH' }),
+
+  listarFavoritos: () => request<{ favoritos: Favorito[] }>('/favoritos'),
+
+  favoritar: (paginaId: string) => request<void>(`/favoritos/${paginaId}`, { method: 'POST' }),
+
+  desfavoritar: (paginaId: string) => request<void>(`/favoritos/${paginaId}`, { method: 'DELETE' }),
 
   listarFiltrosAcessibilidade: () =>
     request<{ recursos_local: FiltroAcessibilidade[]; necessidades_pessoal: FiltroAcessibilidade[] }>(
