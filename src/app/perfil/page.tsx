@@ -9,12 +9,13 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import EditProfileModal from '@/components/EditProfileModal'
-import { CameraIcon, EditIcon, LayersIcon, PlusIcon } from '@/components/icons'
+import CriarEmpreendimentoModal from '@/components/CriarEmpreendimentoModal'
+import EmpreendimentoModal from '@/components/EmpreendimentoModal'
+import { CameraIcon, EditIcon, PlusIcon } from '@/components/icons'
 import { api, type Perfil, type Colaboracao, type Avaliacao } from '@/lib/api'
+import { apiPaginas, type Empreendimento, type MinhaPaginaVinculo } from '@/lib/apiPaginas'
 import { estaLogado, limparSessao, obterUsuarioSalvo } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
-
-const GESTAO_URL = 'https://area02-frontend.pages.dev/login'
 
 function iniciaisDe(nome: string): string {
   return nome
@@ -36,7 +37,13 @@ export default function PerfilPage() {
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
+  const [empreendimentos, setEmpreendimentos] = useState<MinhaPaginaVinculo[]>([])
+  const [carregandoEmpreendimentos, setCarregandoEmpreendimentos] = useState(true)
+  const [erroEmpreendimentos, setErroEmpreendimentos] = useState('')
+
   const [modalAberto, setModalAberto] = useState(false)
+  const [modalCriarAberto, setModalCriarAberto] = useState(false)
+  const [empreendimentoAbertoId, setEmpreendimentoAbertoId] = useState<string | null>(null)
   const [avatarHover, setAvatarHover] = useState(false)
   const [enviandoAvatar, setEnviandoAvatar] = useState(false)
   const [erroAvatar, setErroAvatar] = useState('')
@@ -56,9 +63,24 @@ export default function PerfilPage() {
       .finally(() => setCarregando(false))
   }, [router])
 
+  useEffect(() => {
+    if (!estaLogado()) return
+    apiPaginas
+      .minhasPaginas()
+      .then(({ paginas }) => setEmpreendimentos(paginas))
+      .catch((e) => setErroEmpreendimentos(e instanceof Error ? e.message : 'Erro ao carregar empreendimentos'))
+      .finally(() => setCarregandoEmpreendimentos(false))
+  }, [])
+
   function sair() {
     limparSessao()
     router.push('/')
+  }
+
+  function aoAtualizarEmpreendimento(atualizado: Empreendimento) {
+    setEmpreendimentos((atual) =>
+      atual.map((v) => (v.paginas.id === atualizado.id ? { ...v, paginas: atualizado } : v))
+    )
   }
 
   async function aoSelecionarAvatar(e: ChangeEvent<HTMLInputElement>) {
@@ -273,7 +295,7 @@ export default function PerfilPage() {
             <div style={{ display: 'flex', gap: '1.5rem' }}>
               <div style={{ textAlign: 'center' }}>
                 <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{perfil.paginas_administradas}</p>
-                <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--c-text-3)' }}>páginas administradas</p>
+                <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--c-text-3)' }}>empreendimentos administrados</p>
               </div>
               <div style={{ textAlign: 'center' }}>
                 <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{perfil.colaboracoes}</p>
@@ -287,62 +309,80 @@ export default function PerfilPage() {
           )}
         </GlassCard>
 
-        <h3 style={{ margin: '2.25rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Gerenciar páginas</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: '1rem' }}>
-          <GlassCard hoverable style={{ padding: '1.25rem' }}>
-            <a href={GESTAO_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-              <div
-                style={{
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  borderRadius: '0.75rem',
-                  background: 'linear-gradient(135deg,#1a7aff,#0062e6)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                }}
-              >
-                <PlusIcon />
-              </div>
-              <div>
-                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9375rem' }}>Criar página</p>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-3)' }}>
-                  Use seu login e senha do Plura na Área de Páginas para criar uma nova página.
-                </p>
-              </div>
-            </a>
-          </GlassCard>
-
-          <GlassCard hoverable style={{ padding: '1.25rem' }}>
-            <a href={GESTAO_URL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-              <div
-                style={{
-                  width: '2.5rem',
-                  height: '2.5rem',
-                  borderRadius: '0.75rem',
-                  background: 'var(--c-glass-bg-sm)',
-                  border: '1px solid var(--c-input-border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <LayersIcon />
-              </div>
-              <div>
-                <p style={{ margin: 0, fontWeight: 700, fontSize: '0.9375rem' }}>Minhas páginas</p>
-                <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-3)' }}>
-                  Acesse a Área de Páginas para administrar as páginas que você já criou.
-                </p>
-              </div>
-            </a>
-          </GlassCard>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '2.25rem 0 1rem' }}>
+          <h3 style={{ margin: 0, fontSize: '1.0625rem', fontWeight: 700 }}>Gerenciar empreendimentos</h3>
+          <Button size="sm" variant="primary" icon={<PlusIcon />} onClick={() => setModalCriarAberto(true)}>
+            Adicionar empreendimento
+          </Button>
         </div>
 
-        <h3 style={{ margin: '2.25rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Páginas que colaboro</h3>
+        {erroEmpreendimentos && (
+          <p style={{ color: '#f87171', fontSize: '0.875rem', marginBottom: '1rem' }}>{erroEmpreendimentos}</p>
+        )}
+
+        {carregandoEmpreendimentos ? (
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>carregando…</p>
+        ) : empreendimentos.length === 0 ? (
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não tem nenhum empreendimento.</p>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))', gap: '1rem' }}>
+            {empreendimentos.map(({ paginas: emp, papel }) => (
+              <div
+                key={emp.id}
+                onClick={() => setEmpreendimentoAbertoId(emp.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && setEmpreendimentoAbertoId(emp.id)}
+                className="glass-sm"
+                style={{
+                  padding: 0,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  transition: 'transform 200ms ease, box-shadow 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px)'
+                  e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.35)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = ''
+                  e.currentTarget.style.boxShadow = ''
+                }}
+              >
+                <div
+                  style={{
+                    aspectRatio: '1',
+                    width: '100%',
+                    background: emp.capa_url
+                      ? `url(${emp.capa_url}) center/cover no-repeat`
+                      : 'linear-gradient(135deg,#1a7aff,#0062e6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {!emp.capa_url && (
+                    <span style={{ fontSize: '2rem', fontWeight: 800, color: 'rgba(255,255,255,0.92)' }}>
+                      {emp.nome.trim()[0]?.toUpperCase() ?? '?'}
+                    </span>
+                  )}
+                </div>
+                <div style={{ padding: '0.75rem 0.875rem' }}>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {emp.nome}
+                  </p>
+                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: 'var(--c-text-3)' }}>
+                    {papel === 'administrador' ? 'administrador' : 'colaborador'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <h3 style={{ margin: '2.25rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Empreendimentos que colaboro</h3>
         {colaboracoes.length === 0 ? (
-          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não colabora em nenhuma página.</p>
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não colabora em nenhum empreendimento.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {colaboracoes.map((c) => (
@@ -362,7 +402,7 @@ export default function PerfilPage() {
 
         <h3 style={{ margin: '2.25rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Minhas avaliações</h3>
         {avaliacoes.length === 0 ? (
-          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não avaliou nenhuma Página.</p>
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não avaliou nenhum empreendimento.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
             {avaliacoes.map((a) => (
@@ -389,6 +429,25 @@ export default function PerfilPage() {
             setPerfil(atualizado)
             setModalAberto(false)
           }}
+        />
+      )}
+
+      {modalCriarAberto && (
+        <CriarEmpreendimentoModal
+          onClose={() => setModalCriarAberto(false)}
+          onCreated={(criado) => {
+            setEmpreendimentos((atual) => [...atual, { papel: 'administrador', paginas: criado }])
+            setModalCriarAberto(false)
+            setEmpreendimentoAbertoId(criado.id)
+          }}
+        />
+      )}
+
+      {empreendimentoAbertoId && (
+        <EmpreendimentoModal
+          empreendimentoId={empreendimentoAbertoId}
+          onClose={() => setEmpreendimentoAbertoId(null)}
+          onUpdated={aoAtualizarEmpreendimento}
         />
       )}
 
