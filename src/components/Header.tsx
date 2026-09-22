@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { LOGO_DATA_URI } from '@/lib/logo'
+import { SearchIcon } from './icons'
 
 export default function Header({ label, right }: { label?: string; right?: ReactNode }) {
   const router = useRouter()
@@ -46,6 +47,26 @@ export default function Header({ label, right }: { label?: string; right?: React
           {label}
         </span>
       )}
+      <button
+        onClick={() => router.push('/')}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '0.4375rem',
+          background: 'none',
+          border: '1px solid var(--c-input-border)',
+          borderRadius: '0.625rem',
+          padding: '0.375rem 0.75rem',
+          color: 'var(--c-text-2)',
+          fontSize: '0.8125rem',
+          fontWeight: 600,
+          fontFamily: 'inherit',
+          cursor: 'pointer',
+        }}
+      >
+        <SearchIcon />
+        Buscar
+      </button>
       <div style={{ flex: 1 }} />
       {right}
     </header>
