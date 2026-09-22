@@ -16,10 +16,10 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages project create plura --production-branch=main
+          command: pages project create aplura --production-branch=main
         continue-on-error: true
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy redirect-plura --project-name=plura --branch=main --commit-dirty=true
+          command: pages deploy redirect-plura --project-name=aplura --branch=main --commit-dirty=true
