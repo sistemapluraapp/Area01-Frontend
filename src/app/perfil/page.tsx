@@ -11,8 +11,8 @@ import NotificationBell from '@/components/NotificationBell'
 import EditProfileModal from '@/components/EditProfileModal'
 import CriarEmpreendimentoModal from '@/components/CriarEmpreendimentoModal'
 import EmpreendimentoModal from '@/components/EmpreendimentoModal'
-import { CameraIcon, EditIcon, PlusIcon } from '@/components/icons'
-import { api, type Perfil, type Colaboracao, type Avaliacao } from '@/lib/api'
+import { CameraIcon, CloseIcon, EditIcon, PlusIcon } from '@/components/icons'
+import { api, type Perfil, type Colaboracao, type Avaliacao, type Favorito } from '@/lib/api'
 import { apiPaginas, type Empreendimento, type MinhaPaginaVinculo } from '@/lib/apiPaginas'
 import { estaLogado, limparSessao, obterUsuarioSalvo } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
@@ -40,6 +40,10 @@ export default function PerfilPage() {
   const [empreendimentos, setEmpreendimentos] = useState<MinhaPaginaVinculo[]>([])
   const [carregandoEmpreendimentos, setCarregandoEmpreendimentos] = useState(true)
   const [erroEmpreendimentos, setErroEmpreendimentos] = useState('')
+
+  const [favoritos, setFavoritos] = useState<Favorito[]>([])
+  const [carregandoFavoritos, setCarregandoFavoritos] = useState(true)
+  const [erroFavoritos, setErroFavoritos] = useState('')
 
   const [modalAberto, setModalAberto] = useState(false)
   const [modalCriarAberto, setModalCriarAberto] = useState(false)
@@ -72,9 +76,27 @@ export default function PerfilPage() {
       .finally(() => setCarregandoEmpreendimentos(false))
   }, [])
 
+  useEffect(() => {
+    if (!estaLogado()) return
+    api
+      .listarFavoritos()
+      .then(({ favoritos }) => setFavoritos(favoritos))
+      .catch((e) => setErroFavoritos(e instanceof Error ? e.message : 'Erro ao carregar favoritos'))
+      .finally(() => setCarregandoFavoritos(false))
+  }, [])
+
   function sair() {
     limparSessao()
     router.push('/')
+  }
+
+  async function removerFavorito(paginaId: string) {
+    setFavoritos((atual) => atual.filter((f) => f.paginas.id !== paginaId))
+    try {
+      await api.desfavoritar(paginaId)
+    } catch {
+      // se a remoção falhar no servidor, uma nova visita à página recarrega a lista correta
+    }
   }
 
   function aoAtualizarEmpreendimento(atualizado: Empreendimento) {
@@ -396,6 +418,98 @@ export default function PerfilPage() {
                   </div>
                 </div>
               </GlassCard>
+            ))}
+          </div>
+        )}
+
+        <h3 style={{ margin: '2.25rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Favoritos</h3>
+        {erroFavoritos && (
+          <p style={{ color: '#f87171', fontSize: '0.875rem', marginBottom: '1rem' }}>{erroFavoritos}</p>
+        )}
+        {carregandoFavoritos ? (
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>carregando…</p>
+        ) : favoritos.length === 0 ? (
+          <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>Você ainda não favoritou nenhum empreendimento.</p>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))', gap: '1rem' }}>
+            {favoritos.map(({ paginas: p }) => (
+              <div
+                key={p.id}
+                onClick={() => router.push(`/pagina?id=${p.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && router.push(`/pagina?id=${p.id}`)}
+                className="glass-sm"
+                style={{
+                  position: 'relative',
+                  padding: 0,
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  transition: 'transform 200ms ease, box-shadow 200ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px)'
+                  e.currentTarget.style.boxShadow = '0 16px 40px rgba(0,0,0,0.35)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = ''
+                  e.currentTarget.style.boxShadow = ''
+                }}
+              >
+                <button
+                  type="button"
+                  aria-label="Remover dos favoritos"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    removerFavorito(p.id)
+                  }}
+                  style={{
+                    position: 'absolute',
+                    top: '0.5rem',
+                    right: '0.5rem',
+                    zIndex: 1,
+                    width: '26px',
+                    height: '26px',
+                    borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.55)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#fff',
+                  }}
+                >
+                  <CloseIcon />
+                </button>
+                <div
+                  style={{
+                    aspectRatio: '1',
+                    width: '100%',
+                    background: p.capa_url
+                      ? `url(${p.capa_url}) center/cover no-repeat`
+                      : 'linear-gradient(135deg,#1a7aff,#0062e6)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {!p.capa_url && (
+                    <span style={{ fontSize: '2rem', fontWeight: 800, color: 'rgba(255,255,255,0.92)' }}>
+                      {p.nome.trim()[0]?.toUpperCase() ?? '?'}
+                    </span>
+                  )}
+                </div>
+                <div style={{ padding: '0.75rem 0.875rem' }}>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {p.nome}
+                  </p>
+                  <p style={{ margin: '0.15rem 0 0', fontSize: '0.75rem', color: 'var(--c-text-3)' }}>
+                    {p.cidade ? `${p.cidade}${p.uf ? `/${p.uf}` : ''}` : 'localização não informada'}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         )}

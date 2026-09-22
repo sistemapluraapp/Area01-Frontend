@@ -6,7 +6,7 @@ import GlassCard from '@/components/GlassCard'
 import Button from '@/components/Button'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
-import { ArrowLeftIcon, CloseIcon, MapPinIcon } from '@/components/icons'
+import { ArrowLeftIcon, CloseIcon, HeartIcon, MapPinIcon } from '@/components/icons'
 import { RECURSOS_ACESSIBILIDADE_LABELS } from '@/components/RecursosAcessibilidadeChips'
 import { api, type Avaliacao, type Categoria, type Pagina } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
@@ -204,6 +204,9 @@ function PaginaDetalhe() {
   const [nota, setNota] = useState(5)
   const [comentario, setComentario] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [logado, setLogado] = useState(false)
+  const [favoritado, setFavoritado] = useState(false)
+  const [alternandoFavorito, setAlternandoFavorito] = useState(false)
 
   async function carregar() {
     try {
@@ -218,6 +221,32 @@ function PaginaDetalhe() {
     if (id) carregar()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
+
+  useEffect(() => {
+    const usuarioLogado = estaLogado()
+    setLogado(usuarioLogado)
+    if (usuarioLogado && id) {
+      api
+        .listarFavoritos()
+        .then(({ favoritos }) => setFavoritado(favoritos.some((f) => f.paginas.id === id)))
+        .catch(() => {})
+    }
+  }, [id])
+
+  async function alternarFavorito() {
+    if (!id || alternandoFavorito) return
+    const jaFavoritado = favoritado
+    setFavoritado(!jaFavoritado)
+    setAlternandoFavorito(true)
+    try {
+      if (jaFavoritado) await api.desfavoritar(id)
+      else await api.favoritar(id)
+    } catch {
+      setFavoritado(jaFavoritado)
+    } finally {
+      setAlternandoFavorito(false)
+    }
+  }
 
   async function avaliar(e: React.FormEvent) {
     e.preventDefault()
@@ -238,17 +267,33 @@ function PaginaDetalhe() {
   }
 
   const botaoVoltar = (
-    <button
-      onClick={() => router.push('/')}
-      style={{
-        display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
-        background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)', borderRadius: '9999px',
-        color: 'var(--c-text-1)', fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
-        marginBottom: '1.25rem',
-      }}
-    >
-      <ArrowLeftIcon /> Voltar
-    </button>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem' }}>
+      <button
+        onClick={() => router.push('/')}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
+          background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)', borderRadius: '9999px',
+          color: 'var(--c-text-1)', fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
+        }}
+      >
+        <ArrowLeftIcon /> Voltar
+      </button>
+      {logado && pagina && (
+        <button
+          onClick={alternarFavorito}
+          aria-label={favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
+            background: favoritado ? 'rgba(239,68,68,0.12)' : 'var(--c-glass-bg-sm)',
+            border: favoritado ? '1px solid rgba(239,68,68,0.35)' : '1px solid var(--c-input-border)',
+            borderRadius: '9999px',
+            color: favoritado ? '#ef4444' : 'var(--c-text-1)', fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer',
+          }}
+        >
+          <HeartIcon filled={favoritado} /> {favoritado ? 'Favoritado' : 'Favoritar'}
+        </button>
+      )}
+    </div>
   )
 
   if (erro && !pagina) {
