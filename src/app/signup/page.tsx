@@ -126,7 +126,7 @@ export default function SignupPage() {
           </div>
 
           {generalError && (
-            <div style={{ margin: '1rem 0 0', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', fontSize: '0.875rem', color: '#f87171', textAlign: 'center' }}>
+            <div style={{ margin: '1rem 0 0', padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'var(--c-danger-soft)', border: '1px solid var(--c-danger-border)', fontSize: '0.875rem', color: 'var(--c-danger-text)', textAlign: 'center' }}>
               {generalError}
             </div>
           )}

@@ -81,7 +81,7 @@ export default function AccessibilityTree({
             background: nenhumaAtiva
               ? 'linear-gradient(135deg,rgba(26,122,255,0.25),rgba(0,98,230,0.18))'
               : 'var(--c-glass-bg-sm)',
-            color: nenhumaAtiva ? '#6aadff' : 'var(--c-text-2)',
+            color: nenhumaAtiva ? 'var(--c-accent-text)' : 'var(--c-text-2)',
             boxShadow: nenhumaAtiva ? '0 0 12px rgba(26,122,255,0.18)' : 'none',
             transition: 'all 150ms ease',
           }}
@@ -141,7 +141,7 @@ export default function AccessibilityTree({
                         borderRadius: '9999px',
                         padding: '0.1rem 0.5rem',
                         background: 'rgba(26,122,255,0.22)',
-                        color: '#6aadff',
+                        color: 'var(--c-accent-text)',
                       }}
                     >
                       {selecionadasNaCategoria}
@@ -180,7 +180,7 @@ export default function AccessibilityTree({
                           background: ativo
                             ? 'linear-gradient(135deg,rgba(26,122,255,0.25),rgba(0,98,230,0.18))'
                             : 'var(--c-glass-bg)',
-                          color: ativo ? '#6aadff' : 'var(--c-text-2)',
+                          color: ativo ? 'var(--c-accent-text)' : 'var(--c-text-2)',
                           boxShadow: ativo ? '0 0 12px rgba(26,122,255,0.18)' : 'none',
                           transition: 'all 150ms ease',
                         }}

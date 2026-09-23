@@ -191,10 +191,10 @@ export default function PerfilPage() {
               marginBottom: '1.25rem',
               padding: '0.75rem 1rem',
               borderRadius: '0.75rem',
-              background: 'rgba(239,68,68,0.12)',
-              border: '1px solid rgba(239,68,68,0.3)',
+              background: 'var(--c-danger-soft)',
+              border: '1px solid var(--c-danger-border)',
               fontSize: '0.875rem',
-              color: '#f87171',
+              color: 'var(--c-danger-text)',
             }}
           >
             {erro}
@@ -327,7 +327,7 @@ export default function PerfilPage() {
           </div>
 
           {erroAvatar && (
-            <p style={{ marginTop: '1rem', fontSize: '0.8125rem', color: '#f87171' }}>{erroAvatar}</p>
+            <p style={{ marginTop: '1rem', fontSize: '0.8125rem', color: 'var(--c-danger-text)' }}>{erroAvatar}</p>
           )}
         </GlassCard>
 
@@ -339,7 +339,7 @@ export default function PerfilPage() {
         </div>
 
         {erroEmpreendimentos && (
-          <p style={{ color: '#f87171', fontSize: '0.875rem', marginBottom: '1rem' }}>{erroEmpreendimentos}</p>
+          <p style={{ color: 'var(--c-danger-text)', fontSize: '0.875rem', marginBottom: '1rem' }}>{erroEmpreendimentos}</p>
         )}
 
         {carregandoEmpreendimentos ? (
@@ -447,7 +447,7 @@ export default function PerfilPage() {
 
         <h3 style={{ margin: '2.25rem 0 1rem', fontSize: '1.0625rem', fontWeight: 700 }}>Favoritos</h3>
         {erroFavoritos && (
-          <p style={{ color: '#f87171', fontSize: '0.875rem', marginBottom: '1rem' }}>{erroFavoritos}</p>
+          <p style={{ color: 'var(--c-danger-text)', fontSize: '0.875rem', marginBottom: '1rem' }}>{erroFavoritos}</p>
         )}
         {carregandoFavoritos ? (
           <p style={{ color: 'var(--c-text-3)', fontSize: '0.9375rem' }}>carregando…</p>

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { LOGO_DATA_URI } from '@/lib/logo'
 import { SearchIcon } from './icons'
+import ModoToggle from './ModoToggle'
 
 export default function Header({ label, right }: { label?: string; right?: ReactNode }) {
   const router = useRouter()
@@ -68,6 +69,7 @@ export default function Header({ label, right }: { label?: string; right?: React
         Buscar
       </button>
       <div style={{ flex: 1 }} />
+      <ModoToggle />
       {right}
     </header>
   )
