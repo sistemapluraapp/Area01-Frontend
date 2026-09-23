@@ -70,124 +70,31 @@ async function request<T>(path: string, options: RequestInit = {}, isRetry = fal
   return data as T
 }
 
-export type Categoria =
-  | 'hotel'
-  | 'hostel'
-  | 'pousada'
-  | 'bar'
-  | 'restaurante'
-  | 'cafe'
-  | 'espaco_eventos'
-  | 'passeio_turistico'
-  | 'museu'
-  | 'parque'
-  | 'academia'
-  | 'clinica'
-  | 'outros'
-
-export type RecursoAcessibilidade = string
-
+// Empreendimentos do usuário (backend da Área 02). A criação e a edição
+// acontecem no painel da Área 02 (ver lib/area02.ts).
 export interface Empreendimento {
   id: string
   tipo: 'privada' | 'publica'
   nome: string
-  descricao: string | null
-  categoria: Categoria | null
-  cep: string | null
-  endereco: string | null
+  subtitulo: string | null
+  descricao_curta: string | null
+  categoria: string | null
   cidade: string | null
   uf: string | null
-  complemento: string | null
   logo_url: string | null
   capa_url: string | null
-  fotos_urls: string[]
-  recursos_acessibilidade: RecursoAcessibilidade[]
-  youtube: string | null
-  instagram: string | null
-  facebook: string | null
-  tiktok: string | null
-  website: string | null
+  tema: string
+  cnpj: string | null
+  legado: boolean
   suspensa: boolean
   created_at: string
 }
 
-export interface VinculoPagina {
-  id: string
-  usuario_id: string
-  papel: 'administrador' | 'colaborador'
-  created_at: string
-  usuarios: { nome: string } | null
-}
-
-export interface EmpreendimentoDetalhado extends Empreendimento {
-  vinculos: VinculoPagina[]
-  avaliacoes: unknown[]
-  certificados: unknown[]
-}
-
 export interface MinhaPaginaVinculo {
   papel: 'administrador' | 'colaborador'
-  paginas: Empreendimento
-}
-
-export interface NovoEmpreendimentoBody {
-  nome: string
-  descricao?: string
-  categoria?: Categoria
-  cep?: string
-  endereco?: string
-  cidade?: string
-  uf?: string
-  complemento?: string
-  recursos_acessibilidade?: RecursoAcessibilidade[]
-  youtube?: string
-  instagram?: string
-  facebook?: string
-  tiktok?: string
-  website?: string
+  paginas: Empreendimento | null
 }
 
 export const apiPaginas = {
-  criar: (body: NovoEmpreendimentoBody) =>
-    request<Empreendimento>('/paginas', { method: 'POST', body: JSON.stringify(body) }),
-
   minhasPaginas: () => request<{ paginas: MinhaPaginaVinculo[] }>('/minhas-paginas'),
-
-  obter: (id: string) => request<EmpreendimentoDetalhado>(`/paginas/${id}`),
-
-  atualizar: (id: string, patch: Partial<NovoEmpreendimentoBody>) =>
-    request<Empreendimento>(`/paginas/${id}`, { method: 'PUT', body: JSON.stringify(patch) }),
-
-  uploadLogo: (id: string, imagemBase64: string, extensao: string) =>
-    request<{ logo_url: string }>(`/paginas/${id}/logo`, {
-      method: 'POST',
-      body: JSON.stringify({ imagem_base64: imagemBase64, extensao }),
-    }),
-
-  uploadCapa: (id: string, imagemBase64: string, extensao: string) =>
-    request<{ capa_url: string }>(`/paginas/${id}/capa`, {
-      method: 'POST',
-      body: JSON.stringify({ imagem_base64: imagemBase64, extensao }),
-    }),
-
-  adicionarFoto: (id: string, imagemBase64: string, extensao: string) =>
-    request<{ fotos_urls: string[] }>(`/paginas/${id}/fotos`, {
-      method: 'POST',
-      body: JSON.stringify({ imagem_base64: imagemBase64, extensao }),
-    }),
-
-  removerFoto: (id: string, url: string) =>
-    request<{ fotos_urls: string[] }>(`/paginas/${id}/fotos`, {
-      method: 'DELETE',
-      body: JSON.stringify({ url }),
-    }),
-
-  convidarColaborador: (paginaId: string, cpf: string) =>
-    request<VinculoPagina>(`/paginas/${paginaId}/colaboradores`, {
-      method: 'POST',
-      body: JSON.stringify({ cpf }),
-    }),
-
-  removerColaborador: (paginaId: string, vinculoId: string) =>
-    request<void>(`/paginas/${paginaId}/colaboradores/${vinculoId}`, { method: 'DELETE' }),
 }

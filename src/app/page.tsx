@@ -2,334 +2,167 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { IconSearch, IconUser } from '@tabler/icons-react'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import AcessibilidadeFiltro from '@/components/AcessibilidadeFiltro'
-import { HeartIcon, SearchIcon, UserIcon } from '@/components/icons'
-import { api, type Categoria, type Pagina, type RecursoAcessibilidade } from '@/lib/api'
+import BottomNav from '@/components/BottomNav'
+import CardPagina from '@/components/CardPagina'
+import Icone from '@/components/Icone'
+import { api, type PaginaCard, type RecursoAcessibilidade } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 import { LOGO_DATA_URI } from '@/lib/logo'
+import { useCatalogo } from '@/lib/useCatalogo'
 
-const CATEGORIA_LABEL: Record<Categoria, string> = {
-  hotel: 'Hotel',
-  hostel: 'Hostel',
-  pousada: 'Pousada',
-  bar: 'Bar',
-  restaurante: 'Restaurante',
-  cafe: 'Café',
-  espaco_eventos: 'Espaço de eventos',
-  passeio_turistico: 'Passeio turístico',
-  museu: 'Museu',
-  parque: 'Parque',
-  academia: 'Academia',
-  clinica: 'Clínica',
-  outros: 'Outros',
-}
-
-function SkeletonCard() {
-  return (
-    <div style={{ borderRadius: '1.25rem', overflow: 'hidden', background: 'var(--c-glass-bg)', border: 'var(--c-border)', animation: 'pulse 1.5s ease infinite' }}>
-      <div style={{ height: '120px', background: 'var(--c-glass-bg-sm)' }} />
-      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <div style={{ height: '0.75rem', width: '60px', borderRadius: '0.375rem', background: 'var(--c-glass-bg-sm)' }} />
-        <div style={{ height: '1.125rem', width: '140px', borderRadius: '0.375rem', background: 'var(--c-glass-bg-sm)' }} />
-      </div>
-    </div>
-  )
-}
-
-function PaginaGridCard({
-  pagina,
-  onClick,
-  logado,
-  favoritado,
-  onToggleFavorito,
-}: {
-  pagina: Pagina
-  onClick: () => void
-  logado: boolean
-  favoritado: boolean
-  onToggleFavorito: () => void
-}) {
-  const [hovered, setHovered] = useState(false)
-  const initials = pagina.nome.trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
-  const categoriaLabel = pagina.categoria ? CATEGORIA_LABEL[pagina.categoria] : null
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        borderRadius: '1.25rem',
-        overflow: 'hidden',
-        background: 'var(--c-glass-bg)',
-        border: 'var(--c-border)',
-        boxShadow: hovered ? '0 20px 48px rgba(0,0,0,0.38)' : 'var(--c-shadow-md)',
-        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-        transition: 'transform 220ms ease, box-shadow 220ms ease',
-        cursor: 'pointer',
-      }}
-    >
-      <div
-        style={{
-          height: '120px',
-          background: pagina.capa_url ? undefined : 'linear-gradient(135deg,#1a7aff,#0062e6)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '2.25rem',
-          fontWeight: 800,
-          color: 'rgba(255,255,255,0.9)',
-          letterSpacing: '-0.04em',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {pagina.capa_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={pagina.capa_url} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-        ) : pagina.logo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={pagina.logo_url} alt="" style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '0.75rem' }} />
-        ) : (
-          initials
-        )}
-        {categoriaLabel && (
-          <div style={{ position: 'absolute', top: '0.625rem', left: '0.625rem' }}>
-            <span
-              style={{
-                fontSize: '0.6875rem',
-                fontWeight: 700,
-                fontFamily: 'var(--font-mono)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                background: 'rgba(0,0,0,0.52)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255,255,255,0.18)',
-                borderRadius: '9999px',
-                padding: '0.25rem 0.625rem',
-                color: '#fff',
-              }}
-            >
-              {categoriaLabel}
-            </span>
-          </div>
-        )}
-        {logado && (
-          <button
-            type="button"
-            aria-label={favoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
-            onClick={(e) => {
-              e.stopPropagation()
-              onToggleFavorito()
-            }}
-            style={{
-              position: 'absolute',
-              top: '0.625rem',
-              right: '0.625rem',
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              background: 'rgba(0,0,0,0.52)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255,255,255,0.18)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              color: favoritado ? '#ef4444' : '#fff',
-            }}
-          >
-            <HeartIcon filled={favoritado} />
-          </button>
-        )}
-      </div>
-      <div style={{ padding: '0.875rem 1rem 1rem' }}>
-        <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--c-text-1)', marginBottom: '0.25rem', lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {pagina.nome}
-        </p>
-        <p style={{ fontSize: '0.8125rem', color: 'var(--c-text-3)', lineHeight: 1.4 }}>{pagina.descricao ?? 'Sem descrição'}</p>
-      </div>
-    </div>
-  )
+function normalizar(texto: string) {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 }
 
 export default function HomePage() {
   const router = useRouter()
-  const [logado, setLogado] = useState(false)
+  const catalogo = useCatalogo()
+  const [pronto, setPronto] = useState(false)
   const [termo, setTermo] = useState('')
-  const [resultados, setResultados] = useState<Pagina[]>([])
+  const [categoria, setCategoria] = useState('')
+  const [resultados, setResultados] = useState<PaginaCard[]>([])
   const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState('')
   const [filtroAcessibilidade, setFiltroAcessibilidade] = useState<RecursoAcessibilidade[]>([])
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    const usuarioLogado = estaLogado()
-    setLogado(usuarioLogado)
+    // Busca e páginas exigem login: quem chega por um link compartilhado cai no cadastro/login
+    if (!estaLogado()) {
+      router.replace('/login')
+      return
+    }
+    setPronto(true)
     api
       .buscarPaginas('')
       .then(({ resultados }) => setResultados(resultados))
+      .catch((e) => setErro(e instanceof Error ? e.message : 'Erro ao carregar'))
       .finally(() => setLoading(false))
-
-    if (usuarioLogado) {
-      api
-        .listarFavoritos()
-        .then(({ favoritos }) => setFavoritosIds(new Set(favoritos.map((f) => f.paginas.id))))
-        .catch(() => {})
-    }
-  }, [])
+    api
+      .listarFavoritos()
+      .then(({ favoritos }) => setFavoritosIds(new Set(favoritos.map((f) => f.paginas.id))))
+      .catch(() => {})
+  }, [router])
 
   async function alternarFavorito(paginaId: string) {
     const jaFavoritado = favoritosIds.has(paginaId)
-    setFavoritosIds((atual) => {
-      const proximo = new Set(atual)
-      if (jaFavoritado) proximo.delete(paginaId)
-      else proximo.add(paginaId)
-      return proximo
-    })
+    const alterar = (adicionar: boolean) =>
+      setFavoritosIds((atual) => {
+        const proximo = new Set(atual)
+        if (adicionar) proximo.add(paginaId)
+        else proximo.delete(paginaId)
+        return proximo
+      })
+    alterar(!jaFavoritado)
     try {
       if (jaFavoritado) await api.desfavoritar(paginaId)
       else await api.favoritar(paginaId)
     } catch {
-      setFavoritosIds((atual) => {
-        const proximo = new Set(atual)
-        if (jaFavoritado) proximo.add(paginaId)
-        else proximo.delete(paginaId)
-        return proximo
-      })
+      alterar(jaFavoritado)
     }
   }
 
+  const categoriasPresentes = useMemo(
+    () => catalogo.catalogo.categorias.filter((c) => resultados.some((r) => r.categoria === c.codigo)),
+    [catalogo, resultados]
+  )
+
   const filtradas = useMemo(() => {
-    const t = termo.trim().toLowerCase()
-    let lista = resultados
-    if (t) lista = lista.filter((p) => p.nome.toLowerCase().includes(t))
-    if (filtroAcessibilidade.length > 0) {
-      lista = lista.filter((p) => filtroAcessibilidade.every((r) => p.recursos_acessibilidade.includes(r)))
-    }
-    return lista
-  }, [termo, resultados, filtroAcessibilidade])
+    const t = normalizar(termo.trim())
+    return resultados.filter((p) => {
+      if (t && ![p.nome, p.cidade, p.subtitulo, p.descricao_curta].some((campo) => campo && normalizar(campo).includes(t))) return false
+      if (categoria && p.categoria !== categoria) return false
+      if (filtroAcessibilidade.length && !filtroAcessibilidade.every((r) => p.recursos_acessibilidade.includes(r))) return false
+      return true
+    })
+  }, [termo, categoria, resultados, filtroAcessibilidade])
+
+  if (!pronto) return null
 
   return (
     <>
       <Grain />
-
       <Header
         right={
-          logado ? (
-            <>
-              <NotificationBell />
-              <button
-                onClick={() => router.push('/perfil')}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
-                  background: 'linear-gradient(135deg,#1a7aff,#0062e6)', border: 'none', borderRadius: '0.75rem',
-                  color: '#fff', fontSize: '0.875rem', fontWeight: 700, cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(26,122,255,0.35)',
-                }}
-              >
-                <UserIcon /> Minha Área
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => router.push('/login')}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 1rem',
-                background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)', borderRadius: '0.75rem',
-                color: 'var(--c-text-1)', fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer',
-              }}
-            >
-              <UserIcon /> Login
+          <>
+            <NotificationBell />
+            <button type="button" onClick={() => router.push('/perfil')} aria-label="Minha área" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <IconUser size={18} />
             </button>
-          )
+          </>
         }
       />
 
-      <main style={{ paddingTop: '5rem', paddingBottom: '4rem', position: 'relative', zIndex: 1 }}>
-        <div style={{ textAlign: 'center', padding: '3.5rem 1.5rem 2.5rem', maxWidth: '680px', margin: '0 auto' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'clamp(0.75rem, 2vw, 1.25rem)', marginBottom: '0.875rem' }}>
+      <main style={{ paddingTop: '5rem', paddingBottom: '6rem', position: 'relative', zIndex: 1 }}>
+        <div style={{ textAlign: 'center', padding: '2.5rem 1.25rem 2rem', maxWidth: '680px', margin: '0 auto' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'clamp(0.75rem, 2vw, 1.25rem)', marginBottom: '0.75rem' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={LOGO_DATA_URI}
-              alt=""
-              aria-hidden
-              draggable={false}
-              style={{ height: 'clamp(2.5rem, 6vw, 4rem)', width: 'auto', objectFit: 'contain' }}
-            />
-            <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.05, margin: 0 }}>
-              Plura
-            </h1>
+            <img src={LOGO_DATA_URI} alt="" aria-hidden draggable={false} style={{ height: 'clamp(2.5rem, 6vw, 3.5rem)', width: 'auto', objectFit: 'contain' }} />
+            <h1 style={{ fontSize: 'clamp(2.25rem, 6vw, 3.5rem)', fontWeight: 900, letterSpacing: '-0.045em', lineHeight: 1.05, margin: 0 }}>Plura</h1>
           </div>
-          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: 'var(--c-text-2)', lineHeight: 1.55, maxWidth: '480px', margin: '0 auto' }}>
-            Encontre seu lazer com acessibilidade
-          </p>
+          <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1875rem)', color: 'var(--c-text-2)', lineHeight: 1.55 }}>Encontre experiências sem barreiras</p>
         </div>
 
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.5rem 2rem' }}>
-          <div style={{ background: 'var(--c-glass-bg)', backdropFilter: 'blur(20px)', border: 'var(--c-border)', borderRadius: '1.25rem', boxShadow: 'var(--c-shadow-md)', padding: '1.25rem' }}>
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-text-3)' }}>
-                <SearchIcon />
-              </div>
-              <input
-                type="text"
-                placeholder="Buscar por nome da Página…"
-                value={termo}
-                onChange={(e) => setTermo(e.target.value)}
-                style={{
-                  width: '100%', boxSizing: 'border-box', padding: '0.625rem 0.875rem 0.625rem 2.25rem',
-                  background: 'var(--c-glass-bg-sm)', border: '1px solid var(--c-input-border)', borderRadius: '0.75rem',
-                  color: 'var(--c-text-1)', fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none',
-                }}
-              />
+        <div id="busca" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1rem', scrollMarginTop: '5rem' }}>
+          <label style={{ position: 'relative', display: 'block' }}>
+            <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-text-3)', display: 'flex' }}>
+              <IconSearch size={20} />
+            </span>
+            <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Buscar lugares</span>
+            <input
+              type="search"
+              placeholder="Buscar por nome, cidade ou tipo de lugar…"
+              value={termo}
+              onChange={(e) => setTermo(e.target.value)}
+              style={{ width: '100%', padding: '0.95rem 1rem 0.95rem 2.875rem', background: 'var(--c-glass-bg-lg)', border: 'var(--c-border)', borderRadius: '1.125rem', boxShadow: 'var(--c-shadow-md)', color: 'var(--c-text-1)', fontSize: '1rem', fontFamily: 'inherit', outline: 'none' }}
+            />
+          </label>
+        </div>
+
+        {categoriasPresentes.length > 1 && (
+          <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1rem' }}>
+            <div role="group" aria-label="Filtrar por categoria" style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
+              {[{ codigo: '', rotulo: 'Todos', icone: 'sparkles' }, ...categoriasPresentes].map((c) => {
+                const ativo = categoria === c.codigo
+                return (
+                  <button key={c.codigo || 'todos'} type="button" aria-pressed={ativo} onClick={() => setCategoria(c.codigo)} style={{ flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 0.95rem', borderRadius: '9999px', border: ativo ? '1px solid var(--c-accent-soft-border)' : 'var(--c-border)', background: ativo ? 'var(--c-accent-soft)' : 'var(--c-glass-bg-lg)', color: ativo ? 'var(--c-accent-text)' : 'var(--c-text-2)', fontWeight: 600, fontSize: '0.875rem', fontFamily: 'inherit', cursor: 'pointer' }}>
+                    <Icone nome={c.icone} size={16} /> {c.rotulo}
+                  </button>
+                )
+              })}
             </div>
           </div>
-        </div>
+        )}
 
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.5rem 1.5rem' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1.5rem' }}>
           <AcessibilidadeFiltro value={filtroAcessibilidade} onChange={setFiltroAcessibilidade} />
         </div>
 
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.25rem' }}>
+          {erro && <p role="alert" style={{ color: 'var(--c-danger-text)', marginBottom: '1rem' }}>{erro}</p>}
           {!loading && (
-            <p style={{ fontSize: '0.875rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)', marginBottom: '1.25rem' }}>
-              {termo ? `${filtradas.length} resultado(s) encontrado(s)` : `${resultados.length} Página(s) na plataforma`}
+            <p aria-live="polite" style={{ fontSize: '0.875rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)', marginBottom: '1rem' }}>
+              {filtradas.length} {filtradas.length === 1 ? 'lugar encontrado' : 'lugares encontrados'}
             </p>
           )}
 
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '1rem' }}>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </div>
+            <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>
           ) : filtradas.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '5rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.875rem' }}>
-              <div style={{ color: 'var(--c-text-4)', opacity: 0.5 }}>
-                <SearchIcon />
-              </div>
-              <p style={{ fontSize: '1.0625rem', fontWeight: 600, color: 'var(--c-text-2)' }}>
-                {resultados.length === 0 ? 'Nenhuma Página cadastrada ainda' : 'Nenhum resultado para essa busca'}
-              </p>
+            <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--c-text-2)' }}>
+              <IconSearch size={32} style={{ opacity: 0.4 }} aria-hidden />
+              <p style={{ fontSize: '1.0625rem', fontWeight: 600, marginTop: '0.75rem' }}>{resultados.length === 0 ? 'Nenhum lugar cadastrado ainda' : 'Nenhum resultado para essa busca'}</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: '1rem' }}>
-              {filtradas.map((pagina) => (
-                <PaginaGridCard
-                  key={pagina.id}
-                  pagina={pagina}
-                  onClick={() => router.push(`/pagina?id=${pagina.id}`)}
-                  logado={logado}
-                  favoritado={favoritosIds.has(pagina.id)}
-                  onToggleFavorito={() => alternarFavorito(pagina.id)}
-                />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
+              {filtradas.map((p) => (
+                <CardPagina key={p.id} p={p} catalogo={catalogo} favoritado={favoritosIds.has(p.id)} onFavoritar={() => alternarFavorito(p.id)} />
               ))}
             </div>
           )}
@@ -337,6 +170,8 @@ export default function HomePage() {
       </main>
 
       <Footer />
+      <div style={{ height: '4.5rem' }} aria-hidden />
+      <BottomNav />
     </>
   )
 }

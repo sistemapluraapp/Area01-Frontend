@@ -3,12 +3,8 @@
 import { useMemo, useState } from 'react'
 import type { RecursoAcessibilidade } from '@/lib/api'
 import { useFiltrosAcessibilidade } from '@/lib/useFiltrosAcessibilidade'
+import { useCatalogo } from '@/lib/useCatalogo'
 import { ChevronDownIcon, FilterIcon } from './icons'
-
-const GRUPO_LABEL: Record<string, string> = {
-  mobilidade: 'Mobilidade',
-  sensorial: 'Sensorial',
-}
 
 export default function AcessibilidadeFiltro({
   value,
@@ -18,6 +14,7 @@ export default function AcessibilidadeFiltro({
   onChange: (value: RecursoAcessibilidade[]) => void
 }) {
   const { recursosLocal, carregando } = useFiltrosAcessibilidade()
+  const { catalogo } = useCatalogo()
   const [aberto, setAberto] = useState(false)
 
   const grupos = useMemo(() => {
@@ -25,13 +22,14 @@ export default function AcessibilidadeFiltro({
     for (const item of recursosLocal) {
       let grupo = lista.find((g) => g.id === item.categoria)
       if (!grupo) {
-        grupo = { id: item.categoria, label: GRUPO_LABEL[item.categoria] ?? item.categoria, itens: [] }
+        const rotulo = catalogo.grupos_acessibilidade.find((g) => g.codigo === item.categoria)?.rotulo
+        grupo = { id: item.categoria, label: rotulo ?? item.categoria, itens: [] }
         lista.push(grupo)
       }
       grupo.itens.push({ value: item.codigo, label: item.rotulo })
     }
     return lista
-  }, [recursosLocal])
+  }, [recursosLocal, catalogo])
 
   function alternar(item: RecursoAcessibilidade) {
     onChange(value.includes(item) ? value.filter((v) => v !== item) : [...value, item])

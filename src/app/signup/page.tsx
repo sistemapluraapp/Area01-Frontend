@@ -10,6 +10,8 @@ import Footer from '@/components/Footer'
 import { EmailIcon, LockIcon, EyeIcon, UserIcon, IdIcon } from '@/components/icons'
 import { api } from '@/lib/api'
 import { salvarSessao } from '@/lib/auth'
+import PreferenciasTurismo from '@/components/PreferenciasTurismo'
+import { aplicarPreferencias, guardarPreferenciasPendentes } from '@/lib/preferenciasPendentes'
 import { formatarCpf } from '@/lib/cpf'
 import { LOGO_DATA_URI } from '@/lib/logo'
 
@@ -65,6 +67,7 @@ export default function SignupPage() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [generalError, setGeneralError] = useState('')
+  const [preferencias, setPreferencias] = useState<string[]>([])
 
   function validate() {
     const e: Record<string, string> = {}
@@ -89,11 +92,13 @@ export default function SignupPage() {
     try {
       const resposta = await api.signup({ email: email.trim(), password: senha, cpf, nome: nome.trim() })
       if ('pending_email_confirmation' in resposta) {
+        guardarPreferenciasPendentes(preferencias)
         setShowSuccess(true)
         return
       }
       salvarSessao(resposta)
-      router.push('/perfil')
+      await aplicarPreferencias(preferencias)
+      router.push('/')
     } catch (err) {
       setGeneralError(err instanceof Error ? err.message : 'Não foi possível criar a conta')
     } finally {
@@ -210,6 +215,12 @@ export default function SignupPage() {
                 }
               />
             </div>
+
+            <SectionLabel label="Preferências de turismo" />
+            <p style={{ fontSize: '0.875rem', color: 'var(--c-text-2)', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+              O que você gosta de fazer? Opcional — ajuda a Plura a sugerir lugares para você. Dá para mudar depois no perfil.
+            </p>
+            <PreferenciasTurismo valor={preferencias} onChange={setPreferencias} />
 
             <Button type="submit" size="lg" loading={loading} style={{ width: '100%', marginTop: '1.75rem' }}>
               {loading ? 'Criando conta…' : 'Criar conta'}

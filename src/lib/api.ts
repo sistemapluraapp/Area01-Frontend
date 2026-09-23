@@ -19,7 +19,8 @@ function redirecionarParaLogin(): void {
     window.location.pathname !== '/login' &&
     window.location.pathname !== '/signup'
   ) {
-    window.location.href = '/login'
+    const destino = window.location.pathname + window.location.search
+    window.location.href = `/login?destino=${encodeURIComponent(destino)}`
   }
 }
 
@@ -106,6 +107,7 @@ export interface Perfil {
   uf: string | null
   complemento: string | null
   necessidades_acessibilidade: NecessidadeAcessibilidade[]
+  preferencias_turismo: string[]
   paginas_administradas: number
   colaboracoes: number
   created_at: string
@@ -122,44 +124,134 @@ export interface Colaboracao {
   }
 }
 
-export type Categoria =
-  | 'hotel'
-  | 'hostel'
-  | 'pousada'
-  | 'bar'
-  | 'restaurante'
-  | 'cafe'
-  | 'espaco_eventos'
-  | 'passeio_turistico'
-  | 'museu'
-  | 'parque'
-  | 'academia'
-  | 'clinica'
-  | 'outros'
-
+export type Categoria = string
 export type RecursoAcessibilidade = string
 
-export interface Pagina {
+export type DiaSemana = 'seg' | 'ter' | 'qua' | 'qui' | 'sex' | 'sab' | 'dom'
+export type Turno = { abre: string; fecha: string }
+export type Horarios = Partial<Record<DiaSemana, Turno[]>>
+
+// Dados de um empreendimento nos cards (busca, destinos salvos, recomendações)
+export interface PaginaCard {
   id: string
   tipo: 'privada' | 'publica'
   nome: string
-  descricao: string | null
-  categoria: Categoria | null
-  cep: string | null
-  endereco: string | null
+  subtitulo: string | null
+  descricao_curta: string | null
+  categoria: string | null
   cidade: string | null
   uf: string | null
-  complemento: string | null
   logo_url: string | null
   capa_url: string | null
-  fotos_urls: string[]
-  recursos_acessibilidade: RecursoAcessibilidade[]
-  youtube: string | null
-  instagram: string | null
-  facebook: string | null
-  tiktok: string | null
-  website: string | null
+  tema: string
+  faixa_preco: number | null
+  recursos_acessibilidade: string[]
+  destaques_acessibilidade: string[]
+  nota_media: number | null
+  total_avaliacoes: number
   created_at: string
+}
+
+export type Pagina = PaginaCard
+
+export interface Midia {
+  id: string
+  tipo: 'foto' | 'link'
+  url: string
+  plataforma: string | null
+  formato: 'video' | 'reel' | 'foto_360' | 'tour_virtual' | null
+  categoria: string | null
+  legenda: string | null
+  texto_alt: string | null
+  ordem: number
+}
+
+export interface Experiencia {
+  id: string
+  nome: string
+  descricao: string | null
+  imagem_url: string | null
+  duracao: string | null
+  preco_a_partir: number | null
+  local: string | null
+  faixa_etaria: string | null
+  nivel_dificuldade: 'todos' | 'facil' | 'moderado' | 'dificil' | null
+  requer_acompanhamento: boolean
+  equipamentos: string | null
+  o_que_levar: string | null
+  acessibilidades: string[]
+}
+
+export interface AvaliacaoPublica {
+  id: string
+  nota: number
+  comentario: string | null
+  created_at: string
+  autor_nome: string
+  autor_avatar_url: string | null
+}
+
+export interface PaginaPublica extends Omit<PaginaCard, 'nota_media' | 'total_avaliacoes'> {
+  descricao: string | null
+  slogan: string | null
+  diferencial: string | null
+  tags: string[]
+  whatsapp: string | null
+  instagram: string | null
+  website: string | null
+  video_apresentacao: string | null
+  cep: string | null
+  endereco: string | null
+  complemento: string | null
+  latitude: number | null
+  longitude: number | null
+  ponto_referencia: string | null
+  como_chegar_carro: string | null
+  como_chegar_transporte: string | null
+  rota_acessivel: string | null
+  horarios: Horarios
+  feriados: string | null
+  requer_agendamento: boolean
+  tempo_medio: string | null
+  antecedencia: string | null
+  observacoes_recursos: Record<string, string>
+  antes_de_ir: string[]
+  antes_de_ir_observacoes: string | null
+  seguranca: Record<string, string>
+  updated_at: string
+  midias: Midia[]
+  experiencias: Experiencia[]
+  avaliacoes: AvaliacaoPublica[]
+  nota_media: number | null
+  total_avaliacoes: number
+  recomendacoes: PaginaCard[]
+}
+
+export interface ItemCatalogo {
+  codigo: string
+  rotulo: string
+  icone: string | null
+}
+
+export interface Catalogo {
+  categorias: ItemCatalogo[]
+  tags: ItemCatalogo[]
+  antes_de_ir: ItemCatalogo[]
+  preferencias_turismo: ItemCatalogo[]
+  grupos_acessibilidade: (ItemCatalogo & { descricao: string | null; recursos: (ItemCatalogo & { descricao: string | null })[] })[]
+}
+
+export type MotivoDenuncia =
+  | 'recurso_nao_existe'
+  | 'acessibilidade_diferente'
+  | 'horario_incorreto'
+  | 'local_fechado'
+  | 'informacao_desatualizada'
+  | 'outro'
+
+// Link curto (backend) que gera a prévia no WhatsApp/Facebook e redireciona
+export function linkCompartilhamento(paginaId: string): string {
+  return `${BASE_URL}/s/${paginaId}`
 }
 
 export interface Avaliacao {
@@ -167,9 +259,9 @@ export interface Avaliacao {
   pagina_id: string
   nota: number
   comentario: string | null
-  resposta: string | null
-  respondido_em: string | null
+  status: 'pendente' | 'aprovado' | 'reprovado'
   created_at: string
+  paginas?: { nome: string } | null
 }
 
 export interface AuthResponse {
@@ -181,7 +273,7 @@ export interface AuthResponse {
 export interface Favorito {
   id: string
   created_at: string
-  paginas: Pagina
+  paginas: PaginaCard
 }
 
 export interface Notificacao {
@@ -208,9 +300,14 @@ export const api = {
     request<AuthResponse>('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
 
   buscarPaginas: (q: string) =>
-    request<{ resultados: Pagina[] }>(`/paginas${q ? `?q=${encodeURIComponent(q)}` : ''}`),
+    request<{ resultados: PaginaCard[] }>(`/paginas${q ? `?q=${encodeURIComponent(q)}` : ''}`),
 
-  obterPagina: (id: string) => request<Pagina & { avaliacoes: Avaliacao[] }>(`/paginas/${id}`),
+  obterPagina: (id: string) => request<PaginaPublica>(`/paginas/${id}`),
+
+  catalogo: () => request<Catalogo>('/catalogo'),
+
+  denunciar: (paginaId: string, body: { motivo: MotivoDenuncia; comentario?: string }) =>
+    request<{ ok: true }>(`/paginas/${paginaId}/denuncias`, { method: 'POST', body: JSON.stringify(body) }),
 
   obterPerfil: () => request<Perfil>('/perfil'),
 
@@ -223,6 +320,7 @@ export const api = {
     uf?: string
     complemento?: string
     necessidades_acessibilidade?: NecessidadeAcessibilidade[]
+    preferencias_turismo?: string[]
   }) => request<Perfil>('/perfil', { method: 'PUT', body: JSON.stringify(body) }),
 
   uploadAvatar: (imagemBase64: string, extensao: string) =>
