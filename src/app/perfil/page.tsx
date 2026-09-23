@@ -12,6 +12,8 @@ import EditProfileModal from '@/components/EditProfileModal'
 import EnviarImagemModal from '@/components/EnviarImagemModal'
 import PreferenciasTurismo from '@/components/PreferenciasTurismo'
 import CardPagina from '@/components/CardPagina'
+import Icone from '@/components/Icone'
+import { Modal } from '@/components/pagina/ui'
 import { api, type Avaliacao, type Favorito, type Perfil } from '@/lib/api'
 import { apiPaginas, type MinhaPaginaVinculo } from '@/lib/apiPaginas'
 import { urlGerenciar } from '@/lib/area02'
@@ -26,9 +28,9 @@ function iniciaisDe(nome: string): string {
 function Bloco({ id, titulo, acao, children }: { id?: string; titulo: string; acao?: ReactNode; children: ReactNode }) {
   return (
     <section id={id} style={{ scrollMarginTop: '5rem', background: 'var(--c-glass-bg-lg)', border: 'var(--c-border)', borderRadius: '1.25rem', padding: '1.25rem', boxShadow: 'var(--c-shadow-sm)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 800 }}>{titulo}</h2>
-        {acao}
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1rem' }}>
+        <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 800, flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{titulo}</h2>
+        {acao && <div style={{ flexShrink: 0 }}>{acao}</div>}
       </div>
       {children}
     </section>
@@ -59,6 +61,7 @@ export default function PerfilPage() {
   const [preferencias, setPreferencias] = useState<string[]>([])
   const [salvandoPreferencias, setSalvandoPreferencias] = useState(false)
   const [mensagemPreferencias, setMensagemPreferencias] = useState('')
+  const [editandoPreferencias, setEditandoPreferencias] = useState(false)
 
   useEffect(() => {
     if (!estaLogado()) {
@@ -103,7 +106,7 @@ export default function PerfilPage() {
     try {
       const atualizado = await api.atualizarPerfil({ nome: perfil.nome, preferencias_turismo: preferencias })
       setPerfil((p) => (p ? { ...p, ...atualizado } : p))
-      setMensagemPreferencias('Preferências salvas.')
+      setEditandoPreferencias(false)
     } catch (e) {
       setMensagemPreferencias(e instanceof Error ? e.message : 'Erro ao salvar')
     } finally {
@@ -128,7 +131,7 @@ export default function PerfilPage() {
   }
 
   const nomeExibido = perfil.nome_social?.trim() || perfil.nome
-  const preferenciasAlteradas = JSON.stringify([...preferencias].sort()) !== JSON.stringify([...(perfil.preferencias_turismo ?? [])].sort())
+  const preferenciasSalvas = (perfil.preferencias_turismo ?? []).map((c) => catalogo.preferencias[c]).filter(Boolean)
 
   return (
     <>
@@ -178,18 +181,34 @@ export default function PerfilPage() {
           </dl>
         </section>
 
-        <Bloco titulo="Minhas preferências de turismo">
-          <p style={{ margin: '-0.375rem 0 0.875rem', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>O que você gosta de fazer? Usamos isso para sugerir lugares para você.</p>
-          <PreferenciasTurismo valor={preferencias} onChange={(v) => { setPreferencias(v); setMensagemPreferencias('') }} />
-          {(preferenciasAlteradas || mensagemPreferencias) && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.875rem' }}>
-              {preferenciasAlteradas && (
-                <button type="button" onClick={salvarPreferencias} disabled={salvandoPreferencias} style={{ ...botaoPrimario, opacity: salvandoPreferencias ? 0.7 : 1 }}>
-                  {salvandoPreferencias ? 'Salvando…' : 'Salvar preferências'}
-                </button>
-              )}
-              {mensagemPreferencias && <span role="status" style={{ fontSize: '0.875rem', color: 'var(--c-text-2)' }}>{mensagemPreferencias}</span>}
-            </div>
+        <Bloco
+          titulo="Minhas preferências"
+          acao={
+            <button
+              type="button"
+              onClick={() => {
+                setPreferencias(perfil.preferencias_turismo ?? [])
+                setMensagemPreferencias('')
+                setEditandoPreferencias(true)
+              }}
+              style={botaoPrimario}
+            >
+              <IconPlus size={16} /> Adicionar preferências
+            </button>
+          }
+        >
+          {preferenciasSalvas.length === 0 ? (
+            <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--c-text-2)' }}>
+              Você ainda não escolheu nenhuma preferência. Conte o que você gosta de fazer para a Plura sugerir lugares para você.
+            </p>
+          ) : (
+            <ul aria-label="Preferências escolhidas" style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {preferenciasSalvas.map((p) => (
+                <li key={p.codigo} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.95rem', borderRadius: '9999px', border: '1px solid var(--c-accent-soft-border)', background: 'var(--c-accent-soft)', color: 'var(--c-accent-text)', fontSize: '0.875rem', fontWeight: 600 }}>
+                  <Icone nome={p.icone} size={17} /> {p.rotulo}
+                </li>
+              ))}
+            </ul>
           )}
         </Bloco>
 
@@ -211,11 +230,11 @@ export default function PerfilPage() {
           titulo="Meus empreendimentos"
           acao={
             <a href={urlGerenciar('/nova-pagina')} style={botaoPrimario}>
-              <IconPlus size={16} /> Cadastrar empreendimento
+              <IconPlus size={16} /> Cadastrar
             </a>
           }
         >
-          <p style={{ margin: '-0.375rem 0 0.875rem', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>
+          <p style={{ margin: '0 0 0.875rem', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>
             A gestão das páginas acontece no painel de empreendimentos da Plura. Você entra nele automaticamente, sem precisar fazer login de novo.
           </p>
           {empreendimentos.length === 0 ? (
@@ -282,6 +301,25 @@ export default function PerfilPage() {
       <div style={{ height: '4.5rem' }} aria-hidden />
       <BottomNav />
 
+      {editandoPreferencias && (
+        <Modal titulo="Preferências de turismo" onClose={() => setEditandoPreferencias(false)}>
+          <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>Toque para adicionar ou remover. Usamos isso para sugerir lugares para você.</p>
+          <PreferenciasTurismo valor={preferencias} onChange={setPreferencias} />
+          {mensagemPreferencias && (
+            <p role="alert" style={{ margin: '0.875rem 0 0', fontSize: '0.875rem', color: 'var(--c-danger-text)' }}>
+              {mensagemPreferencias}
+            </p>
+          )}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem' }}>
+            <button type="button" onClick={() => setEditandoPreferencias(false)} style={botaoSecundario}>
+              Cancelar
+            </button>
+            <button type="button" onClick={salvarPreferencias} disabled={salvandoPreferencias} style={{ ...botaoPrimario, opacity: salvandoPreferencias ? 0.7 : 1 }}>
+              {salvandoPreferencias ? 'Salvando…' : 'Salvar preferências'}
+            </button>
+          </div>
+        </Modal>
+      )}
       {editando && (
         <EditProfileModal
           perfil={perfil}

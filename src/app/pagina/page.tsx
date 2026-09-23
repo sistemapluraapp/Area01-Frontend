@@ -17,6 +17,7 @@ import Galeria, { itensDaGaleria } from '@/components/pagina/Galeria'
 import Experiencias from '@/components/pagina/Experiencias'
 import Avaliacoes from '@/components/pagina/Avaliacoes'
 import { AntesDeIr, Denunciar, Recomendacoes, Seguranca, SelosPrevia } from '@/components/pagina/Complementos'
+import { TemaPaginaContext } from '@/components/pagina/ui'
 import { api, type PaginaPublica } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 import { temaValido } from '@/lib/temasPagina'
@@ -77,8 +78,11 @@ function PaginaEmpreendimento() {
 
   if (!pagina) return <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)', padding: '2rem 0' }}>carregando…</p>
 
+  const tema = temaValido(pagina.tema)
+
   return (
-    <div data-tema={temaValido(pagina.tema)} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <TemaPaginaContext.Provider value={tema}>
+    <div data-tema={tema} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {/* Leve tom da cor da página no fundo da tela */}
       <div aria-hidden style={{ position: 'fixed', inset: 0, zIndex: -1, background: 'var(--p-bg)' }} />
       <Cabecalho
@@ -105,6 +109,7 @@ function PaginaEmpreendimento() {
       <SelosPrevia />
       <Denunciar p={pagina} />
     </div>
+    </TemaPaginaContext.Provider>
   )
 }
 

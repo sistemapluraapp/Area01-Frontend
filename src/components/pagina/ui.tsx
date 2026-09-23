@@ -1,7 +1,12 @@
 'use client'
 
-import { useEffect, type CSSProperties, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, type CSSProperties, type ReactNode } from 'react'
 import { IconStarFilled, IconStarHalfFilled, IconX } from '@tabler/icons-react'
+import Portal from '../Portal'
+
+// Cor da página atual. Os modais são renderizados direto no <body> (fora do
+// contêiner [data-tema]), então levam o tema junto por este contexto.
+export const TemaPaginaContext = createContext<string>('plura')
 
 // Elementos visuais da página do empreendimento. As cores de destaque vêm
 // do tema da página (--p-accent...), definido no contêiner [data-tema].
@@ -97,6 +102,7 @@ export function formatarNota(nota: number): string {
 }
 
 export function Modal({ titulo, onClose, children, largura = 560 }: { titulo: string; onClose: () => void; children: ReactNode; largura?: number }) {
+  const tema = useContext(TemaPaginaContext)
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', aoTeclar)
@@ -109,7 +115,8 @@ export function Modal({ titulo, onClose, children, largura = 560 }: { titulo: st
   }, [onClose])
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={titulo} onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 10040, background: 'var(--c-overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', animation: 'ep-fade 150ms ease' }}>
+    <Portal>
+    <div data-tema={tema} role="dialog" aria-modal="true" aria-label={titulo} onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 10040, background: 'var(--c-overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', animation: 'ep-fade 150ms ease' }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: `${largura}px`, maxHeight: '90vh', overflowY: 'auto', background: 'var(--c-modal-bg)', color: 'var(--c-text-1)', border: 'var(--c-border)', borderRadius: '1.25rem', boxShadow: 'var(--c-shadow-lg)', animation: 'ep-scale 180ms ease' }}>
         <div style={{ position: 'sticky', top: 0, background: 'var(--c-modal-bg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '1rem 1.25rem', borderBottom: '1px solid var(--c-divider)', zIndex: 1 }}>
           <h2 style={{ fontSize: '1.0625rem', fontWeight: 700, margin: 0 }}>{titulo}</h2>
@@ -120,6 +127,7 @@ export function Modal({ titulo, onClose, children, largura = 560 }: { titulo: st
         <div style={{ padding: '1.25rem' }}>{children}</div>
       </div>
     </div>
+    </Portal>
   )
 }
 
