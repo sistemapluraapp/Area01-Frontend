@@ -9,6 +9,7 @@ import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import AcessibilidadeFiltro from '@/components/AcessibilidadeFiltro'
 import SugestaoAcessibilidade from '@/components/SugestaoAcessibilidade'
+import BuscaPorVoz from '@/components/BuscaPorVoz'
 import BottomNav from '@/components/BottomNav'
 import CardPagina from '@/components/CardPagina'
 import Icone from '@/components/Icone'
@@ -115,6 +116,7 @@ export default function HomePage() {
         <SugestaoAcessibilidade />
 
         <div id="busca" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1rem', scrollMarginTop: '5rem' }}>
+          <div style={{ position: 'relative' }}>
           <label style={{ position: 'relative', display: 'block' }}>
             <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-text-3)', display: 'flex' }}>
               <IconSearch size={20} aria-hidden />
@@ -125,9 +127,11 @@ export default function HomePage() {
               placeholder="Buscar por nome, cidade ou tipo de lugar…"
               value={termo}
               onChange={(e) => setTermo(e.target.value)}
-              style={{ width: '100%', padding: '0.95rem 1rem 0.95rem 2.875rem', background: 'var(--c-glass-bg-lg)', border: 'var(--c-border)', borderRadius: '1.125rem', boxShadow: 'var(--c-shadow-md)', color: 'var(--c-text-1)', fontSize: '1rem', fontFamily: 'inherit', outline: 'none' }}
+              style={{ width: '100%', padding: '0.95rem 3.25rem 0.95rem 2.875rem', background: 'var(--c-glass-bg-lg)', border: 'var(--c-border)', borderRadius: '1.125rem', boxShadow: 'var(--c-shadow-md)', color: 'var(--c-text-1)', fontSize: '1rem', fontFamily: 'inherit', outline: 'none' }}
             />
           </label>
+          <BuscaPorVoz onTexto={setTermo} />
+          </div>
         </div>
 
         {categoriasPresentes.length > 1 && (
