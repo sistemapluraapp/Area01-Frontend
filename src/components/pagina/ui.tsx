@@ -1,6 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, type CSSProperties, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useFocoPreso } from '@/lib/useFocoPreso'
 import { IconStarFilled, IconStarHalfFilled, IconX } from '@tabler/icons-react'
 import Portal from '../Portal'
 
@@ -102,6 +103,8 @@ export function formatarNota(nota: number): string {
 }
 
 export function Modal({ titulo, onClose, children, largura = 560 }: { titulo: string; onClose: () => void; children: ReactNode; largura?: number }) {
+  const refFoco = useRef<HTMLDivElement>(null)
+  useFocoPreso(refFoco)
   const tema = useContext(TemaPaginaContext)
   useEffect(() => {
     const aoTeclar = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -116,12 +119,12 @@ export function Modal({ titulo, onClose, children, largura = 560 }: { titulo: st
 
   return (
     <Portal>
-    <div data-tema={tema} role="dialog" aria-modal="true" aria-label={titulo} onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 10040, background: 'var(--c-overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', animation: 'ep-fade 150ms ease' }}>
+    <div ref={refFoco} data-tema={tema} role="dialog" aria-modal="true" aria-label={titulo} onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 10040, background: 'var(--c-overlay)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', animation: 'ep-fade 150ms ease' }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: `${largura}px`, maxHeight: '90vh', overflowY: 'auto', background: 'var(--c-modal-bg)', color: 'var(--c-text-1)', border: 'var(--c-border)', borderRadius: '1.25rem', boxShadow: 'var(--c-shadow-lg)', animation: 'ep-scale 180ms ease' }}>
         <div style={{ position: 'sticky', top: 0, background: 'var(--c-modal-bg)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '1rem 1.25rem', borderBottom: '1px solid var(--c-divider)', zIndex: 1 }}>
           <h2 style={{ fontSize: '1.0625rem', fontWeight: 700, margin: 0 }}>{titulo}</h2>
           <button type="button" onClick={onClose} aria-label="Fechar" style={{ background: 'none', border: 'none', color: 'var(--c-text-2)', cursor: 'pointer', display: 'flex', padding: '0.25rem' }}>
-            <IconX size={20} />
+            <IconX size={20} aria-hidden />
           </button>
         </div>
         <div style={{ padding: '1.25rem' }}>{children}</div>

@@ -35,9 +35,9 @@ export default function Experiencias({ p, catalogo }: { p: PaginaPublica; catalo
             <div aria-hidden style={{ minHeight: '150px', background: e.imagem_url ? `url("${e.imagem_url}") center/cover` : 'var(--p-soft)' }} />
             <div style={{ padding: '0.875rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
               <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>{e.nome}</h3>
-              {e.duracao && <Info icone={<IconClock size={16} />}>{e.duracao}</Info>}
-              {preco(e.preco_a_partir) && <Info icone={<IconCurrencyReal size={16} />}>{preco(e.preco_a_partir)}</Info>}
-              {e.nivel_dificuldade && <Info icone={<IconMountain size={16} />}>{NIVEL[e.nivel_dificuldade]}</Info>}
+              {e.duracao && <Info icone={<IconClock size={16} aria-hidden />}>{e.duracao}</Info>}
+              {preco(e.preco_a_partir) && <Info icone={<IconCurrencyReal size={16} aria-hidden />}>{preco(e.preco_a_partir)}</Info>}
+              {e.nivel_dificuldade && <Info icone={<IconMountain size={16} aria-hidden />}>{NIVEL[e.nivel_dificuldade]}</Info>}
               <button type="button" onClick={() => setAberta(e)} style={{ alignSelf: 'flex-start', marginTop: '0.375rem', padding: '0.45rem 1rem', borderRadius: '0.625rem', border: 'none', background: 'var(--p-accent)', color: 'var(--p-accent-contrast)', fontWeight: 700, fontSize: '0.8125rem', fontFamily: 'inherit', cursor: 'pointer' }}>
                 Saiba mais
               </button>
@@ -53,12 +53,12 @@ export default function Experiencias({ p, catalogo }: { p: PaginaPublica; catalo
             <img src={aberta.imagem_url} alt="" style={{ width: '100%', aspectRatio: '16 / 9', objectFit: 'cover', borderRadius: '0.875rem', marginBottom: '1rem' }} />
           )}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.25rem', marginBottom: '1rem' }}>
-            {aberta.duracao && <Info icone={<IconClock size={16} />}>{aberta.duracao}</Info>}
-            {preco(aberta.preco_a_partir) && <Info icone={<IconCurrencyReal size={16} />}>{preco(aberta.preco_a_partir)}</Info>}
-            {aberta.nivel_dificuldade && <Info icone={<IconMountain size={16} />}>{NIVEL[aberta.nivel_dificuldade]}</Info>}
-            {aberta.local && <Info icone={<IconMapPin size={16} />}>{aberta.local}</Info>}
-            {aberta.faixa_etaria && <Info icone={<IconUsers size={16} />}>{aberta.faixa_etaria}</Info>}
-            {aberta.requer_acompanhamento && <Info icone={<IconUsers size={16} />}>Necessário estar acompanhado</Info>}
+            {aberta.duracao && <Info icone={<IconClock size={16} aria-hidden />}>{aberta.duracao}</Info>}
+            {preco(aberta.preco_a_partir) && <Info icone={<IconCurrencyReal size={16} aria-hidden />}>{preco(aberta.preco_a_partir)}</Info>}
+            {aberta.nivel_dificuldade && <Info icone={<IconMountain size={16} aria-hidden />}>{NIVEL[aberta.nivel_dificuldade]}</Info>}
+            {aberta.local && <Info icone={<IconMapPin size={16} aria-hidden />}>{aberta.local}</Info>}
+            {aberta.faixa_etaria && <Info icone={<IconUsers size={16} aria-hidden />}>{aberta.faixa_etaria}</Info>}
+            {aberta.requer_acompanhamento && <Info icone={<IconUsers size={16} aria-hidden />}>Necessário estar acompanhado</Info>}
           </div>
           {aberta.descricao && (
             <div style={{ fontSize: '0.9375rem', color: 'var(--c-text-2)' }}>

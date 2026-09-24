@@ -14,6 +14,7 @@ import {
   IconNavigation,
   IconPhoto,
   IconShare,
+  IconHandLoveYou,
 } from '@tabler/icons-react'
 import Icone from '../Icone'
 import { BotaoContorno, Estrelas, IconeRedondo, Modal, formatarNota } from './ui'
@@ -104,7 +105,7 @@ function ModalCompartilhar({ p, onClose }: { p: PaginaPublica; onClose: () => vo
           </a>
         ))}
         <button type="button" onClick={copiar} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '0.875rem', border: 'var(--c-border)', background: 'transparent', color: 'var(--c-text-1)', fontWeight: 600, fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer' }}>
-          {copiado ? <IconCheck size={22} color="var(--c-success-text)" /> : <IconCopy size={22} />} {copiado ? 'Link copiado!' : 'Copiar link'}
+          {copiado ? <IconCheck size={22} color="var(--c-success-text)" aria-hidden /> : <IconCopy size={22} aria-hidden />} {copiado ? 'Link copiado!' : 'Copiar link'}
         </button>
       </div>
       <p style={{ fontSize: '0.75rem', color: 'var(--c-text-3)', marginTop: '0.875rem' }}>No Instagram, cole o link copiado nos stories ou na bio.</p>
@@ -160,11 +161,11 @@ export default function Cabecalho({
         >
           <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 35%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
           <button type="button" onClick={() => (window.history.length > 1 ? router.back() : router.push('/'))} aria-label="Voltar" style={{ position: 'absolute', top: '0.875rem', left: '0.875rem', width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.45)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(6px)' }}>
-            <IconArrowLeft size={22} />
+            <IconArrowLeft size={22} aria-hidden />
           </button>
           {totalMidias > 0 && (
             <button type="button" onClick={onVerGaleria} style={{ position: 'absolute', right: '0.875rem', bottom: '0.875rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.875rem', borderRadius: '9999px', border: '1px solid rgba(255,255,255,0.35)', background: 'rgba(0,0,0,0.55)', color: '#fff', fontWeight: 600, fontSize: '0.8125rem', fontFamily: 'inherit', cursor: 'pointer', backdropFilter: 'blur(6px)' }}>
-              <IconPhoto size={16} /> Ver galeria ({totalMidias})
+              <IconPhoto size={16} aria-hidden /> Ver galeria ({totalMidias})
             </button>
           )}
         </div>
@@ -215,6 +216,11 @@ export default function Cabecalho({
               <Icone nome={categoria.icone} size={15} /> {categoria.rotulo}
             </span>
           )}
+          {p.video_libras && (
+            <a href="#libras" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.25rem 0.75rem', borderRadius: '9999px', border: '1px solid var(--p-soft-border)', color: 'var(--p-accent-text)', fontSize: '0.8125rem', fontWeight: 700, textDecoration: 'none' }}>
+              <IconHandLoveYou size={15} aria-hidden /> Apresentação em Libras
+            </a>
+          )}
           {p.faixa_preco && (
             <span title="Faixa de preço" style={{ padding: '0.25rem 0.75rem', borderRadius: '9999px', border: '1px solid var(--c-divider)', fontSize: '0.8125rem', fontWeight: 700, color: 'var(--c-text-2)' }}>
               {'$'.repeat(p.faixa_preco)}
@@ -229,17 +235,17 @@ export default function Cabecalho({
       <div style={{ display: 'grid', gridTemplateColumns: whatsapp ? 'repeat(auto-fit, minmax(140px, 1fr))' : 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem', marginTop: '1.25rem' }}>
         {whatsapp && (
           <a href={whatsapp} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', padding: '0.7rem 1rem', borderRadius: '0.75rem', background: 'var(--p-accent)', color: 'var(--p-accent-contrast)', fontWeight: 700, fontSize: '0.9375rem', textDecoration: 'none', boxShadow: '0 6px 18px color-mix(in srgb, var(--p-accent) 35%, transparent)' }}>
-            <IconBrandWhatsapp size={19} /> Entrar em contato
+            <IconBrandWhatsapp size={19} aria-hidden /> Entrar em contato
           </a>
         )}
         <a href={urlComoChegar(p)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', padding: '0.6rem 0.95rem', borderRadius: '0.75rem', border: '1px solid var(--p-soft-border)', background: 'var(--c-glass-bg-lg)', color: 'var(--p-accent-text)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' }}>
-          <IconNavigation size={18} /> Como chegar
+          <IconNavigation size={18} aria-hidden /> Como chegar
         </a>
         <BotaoContorno onClick={onFavoritar} rotulo={favoritado ? 'Remover dos destinos salvos' : 'Salvar destino'}>
-          {favoritado ? <IconHeartFilled size={18} color="#ef4444" /> : <IconHeart size={18} />} {favoritado ? 'Salvo' : 'Salvar destino'}
+          {favoritado ? <IconHeartFilled size={18} color="#ef4444" aria-hidden /> : <IconHeart size={18} aria-hidden />} {favoritado ? 'Salvo' : 'Salvar destino'}
         </BotaoContorno>
         <BotaoContorno onClick={compartilhar}>
-          <IconShare size={18} /> Compartilhar
+          <IconShare size={18} aria-hidden /> Compartilhar
         </BotaoContorno>
       </div>
 

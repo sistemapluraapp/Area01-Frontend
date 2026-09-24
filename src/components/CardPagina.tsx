@@ -1,6 +1,6 @@
 'use client'
 
-import { IconHeart, IconHeartFilled, IconMapPin, IconStarFilled } from '@tabler/icons-react'
+import { IconHeart, IconHeartFilled, IconMapPin, IconStarFilled, IconHandLoveYou } from '@tabler/icons-react'
 import Icone from './Icone'
 import type { PaginaCard } from '@/lib/api'
 import type { useCatalogo } from '@/lib/useCatalogo'
@@ -44,8 +44,12 @@ export default function CardPagina({
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>
             {p.nota_media != null && (
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', fontWeight: 700, color: 'var(--c-text-1)' }}>
-                <IconStarFilled size={14} color="#f59e0b" aria-hidden /> {p.nota_media.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                <span style={{ fontWeight: 400, color: 'var(--c-text-3)' }}>({p.total_avaliacoes})</span>
+                <span className="sr-only">
+                  Nota {p.nota_media.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} de 5, {p.total_avaliacoes} {p.total_avaliacoes === 1 ? 'avaliação' : 'avaliações'}
+                </span>
+                <IconStarFilled size={14} color="#f59e0b" aria-hidden />
+                <span aria-hidden>{p.nota_media.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                <span aria-hidden style={{ fontWeight: 400, color: 'var(--c-text-3)' }}>({p.total_avaliacoes})</span>
               </span>
             )}
             {local && (
@@ -54,6 +58,11 @@ export default function CardPagina({
               </span>
             )}
           </div>
+          {p.video_libras && (
+            <span style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.15rem 0.55rem', borderRadius: '9999px', background: 'var(--p-soft)', color: 'var(--p-accent-text)', fontSize: '0.75rem', fontWeight: 700 }}>
+              <IconHandLoveYou size={14} aria-hidden /> Apresentação em Libras
+            </span>
+          )}
           {!compacto && p.descricao_curta && <p style={{ margin: '0.125rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-2)', lineHeight: 1.45 }}>{p.descricao_curta}</p>}
           {destaques.length > 0 && (
             <ul aria-label="Recursos de acessibilidade" style={{ listStyle: 'none', margin: 'auto 0 0', padding: '0.375rem 0 0', display: 'flex', gap: '0.375rem', flexWrap: 'wrap' }}>
@@ -69,7 +78,7 @@ export default function CardPagina({
       </a>
       {onFavoritar && (
         <button type="button" onClick={onFavoritar} aria-label={favoritado ? `Remover ${p.nome} dos destinos salvos` : `Salvar ${p.nome} nos destinos`} aria-pressed={favoritado} style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', width: '36px', height: '36px', borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.5)', color: favoritado ? '#ef4444' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-          {favoritado ? <IconHeartFilled size={19} /> : <IconHeart size={19} />}
+          {favoritado ? <IconHeartFilled size={19} aria-hidden /> : <IconHeart size={19} aria-hidden />}
         </button>
       )}
     </article>

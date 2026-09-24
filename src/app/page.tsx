@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { IconSearch, IconUser } from '@tabler/icons-react'
+import { IconSearch, IconUser, IconHandLoveYou } from '@tabler/icons-react'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import NotificationBell from '@/components/NotificationBell'
 import AcessibilidadeFiltro from '@/components/AcessibilidadeFiltro'
+import SugestaoAcessibilidade from '@/components/SugestaoAcessibilidade'
 import BottomNav from '@/components/BottomNav'
 import CardPagina from '@/components/CardPagina'
 import Icone from '@/components/Icone'
@@ -30,6 +31,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState('')
   const [filtroAcessibilidade, setFiltroAcessibilidade] = useState<RecursoAcessibilidade[]>([])
+  const [apenasLibras, setApenasLibras] = useState(false)
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
@@ -79,9 +81,10 @@ export default function HomePage() {
       if (t && ![p.nome, p.cidade, p.subtitulo, p.descricao_curta].some((campo) => campo && normalizar(campo).includes(t))) return false
       if (categoria && p.categoria !== categoria) return false
       if (filtroAcessibilidade.length && !filtroAcessibilidade.every((r) => p.recursos_acessibilidade.includes(r))) return false
+      if (apenasLibras && !p.video_libras) return false
       return true
     })
-  }, [termo, categoria, resultados, filtroAcessibilidade])
+  }, [termo, categoria, resultados, filtroAcessibilidade, apenasLibras])
 
   if (!pronto) return null
 
@@ -93,13 +96,13 @@ export default function HomePage() {
           <>
             <NotificationBell />
             <button type="button" onClick={() => router.push('/perfil')} aria-label="Minha área" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <IconUser size={18} />
+              <IconUser size={18} aria-hidden />
             </button>
           </>
         }
       />
 
-      <main style={{ paddingTop: '5rem', paddingBottom: '6rem', position: 'relative', zIndex: 1 }}>
+      <main id="conteudo" tabIndex={-1} style={{ paddingTop: '5rem', paddingBottom: '6rem', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', padding: '2.5rem 1.25rem 2rem', maxWidth: '680px', margin: '0 auto' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'clamp(0.75rem, 2vw, 1.25rem)', marginBottom: '0.75rem' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -109,10 +112,12 @@ export default function HomePage() {
           <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.1875rem)', color: 'var(--c-text-2)', lineHeight: 1.55 }}>Encontre experiências sem barreiras</p>
         </div>
 
+        <SugestaoAcessibilidade />
+
         <div id="busca" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1rem', scrollMarginTop: '5rem' }}>
           <label style={{ position: 'relative', display: 'block' }}>
             <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-text-3)', display: 'flex' }}>
-              <IconSearch size={20} />
+              <IconSearch size={20} aria-hidden />
             </span>
             <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Buscar lugares</span>
             <input
@@ -140,8 +145,16 @@ export default function HomePage() {
           </div>
         )}
 
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1.5rem' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.25rem 1.5rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem' }}>
           <AcessibilidadeFiltro value={filtroAcessibilidade} onChange={setFiltroAcessibilidade} />
+          <button
+            type="button"
+            aria-pressed={apenasLibras}
+            onClick={() => setApenasLibras((v) => !v)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', padding: '0.7rem 1.1rem', borderRadius: '9999px', border: apenasLibras ? '1px solid var(--c-accent-soft-border)' : 'var(--c-border)', background: apenasLibras ? 'var(--c-accent-soft)' : 'var(--c-glass-bg-lg)', boxShadow: 'var(--c-shadow-sm)', color: apenasLibras ? 'var(--c-accent-text)' : 'var(--c-text-1)', fontSize: '0.9375rem', fontWeight: 700, fontFamily: 'inherit', cursor: 'pointer' }}
+          >
+            <IconHandLoveYou size={19} aria-hidden /> Apresentação em Libras
+          </button>
         </div>
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.25rem' }}>

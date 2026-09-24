@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useFocoPreso } from '@/lib/useFocoPreso'
 import { useRouter } from 'next/navigation'
 import GlassCard from '@/components/GlassCard'
 import Input, { PasswordStrength } from '@/components/Input'
 import Button from '@/components/Button'
 import Grain from '@/components/Grain'
+import AcessoRapido from '@/components/AcessoRapido'
 import Footer from '@/components/Footer'
 import { EmailIcon, LockIcon, EyeIcon, UserIcon, IdIcon } from '@/components/icons'
 import { api } from '@/lib/api'
@@ -27,10 +29,14 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 function SuccessModal({ onClose }: { onClose: () => void }) {
+  const refFoco = useRef<HTMLDivElement>(null)
+  useFocoPreso(refFoco)
   return (
     <div
+      ref={refFoco}
       role="dialog"
       aria-modal="true"
+      aria-label="Conta criada"
       style={{ position: 'fixed', inset: 0, zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', background: 'rgba(4,4,15,0.72)', backdropFilter: 'blur(6px)' }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
@@ -118,7 +124,9 @@ export default function SignupPage() {
       )}
       <Grain />
 
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', position: 'relative', zIndex: 1 }}>
+      <AcessoRapido />
+
+      <div id="conteudo" tabIndex={-1} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', position: 'relative', zIndex: 1 }}>
         <GlassCard variant="lg" style={{ width: '100%', maxWidth: '480px', padding: '2.5rem 2rem' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}

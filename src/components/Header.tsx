@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { LOGO_DATA_URI } from '@/lib/logo'
 import { SearchIcon } from './icons'
 import ModoToggle from './ModoToggle'
+import PainelAcessibilidade from './PainelAcessibilidade'
 
 export default function Header({ label, right }: { label?: string; right?: ReactNode }) {
   const router = useRouter()
@@ -19,21 +20,17 @@ export default function Header({ label, right }: { label?: string; right?: React
         zIndex: 100,
         display: 'flex',
         alignItems: 'center',
-        padding: '0.875rem 1.5rem',
-        gap: '1rem',
+        padding: '0.875rem clamp(0.75rem, 4vw, 1.5rem)',
+        gap: 'clamp(0.5rem, 2vw, 1rem)',
         background: 'var(--c-glass-bg)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid var(--c-divider)',
       }}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={LOGO_DATA_URI}
-        alt="Plura"
-        style={{ height: '30px', width: 'auto', objectFit: 'contain', cursor: 'pointer' }}
-        draggable={false}
-        onClick={() => router.push('/')}
-      />
+      <a href="/" aria-label="Plura, página inicial" style={{ display: 'flex', flexShrink: 0 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={LOGO_DATA_URI} alt="" style={{ height: '30px', width: 'auto', objectFit: 'contain' }} draggable={false} />
+      </a>
       {label && (
         <span
           style={{
@@ -50,6 +47,7 @@ export default function Header({ label, right }: { label?: string; right?: React
       )}
       <button
         onClick={() => router.push('/')}
+        aria-label="Buscar lugares"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -66,9 +64,10 @@ export default function Header({ label, right }: { label?: string; right?: React
         }}
       >
         <SearchIcon />
-        Buscar
+        <span className="rotulo-buscar">Buscar</span>
       </button>
       <div style={{ flex: 1 }} />
+      <PainelAcessibilidade />
       <ModoToggle />
       {right}
     </header>

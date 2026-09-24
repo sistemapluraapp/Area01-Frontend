@@ -147,6 +147,7 @@ export interface PaginaCard {
   faixa_preco: number | null
   recursos_acessibilidade: string[]
   destaques_acessibilidade: string[]
+  video_libras?: string | null
   nota_media: number | null
   total_avaliacoes: number
   created_at: string
@@ -200,6 +201,7 @@ export interface PaginaPublica extends Omit<PaginaCard, 'nota_media' | 'total_av
   instagram: string | null
   website: string | null
   video_apresentacao: string | null
+  como_e_o_lugar: string | null
   cep: string | null
   endereco: string | null
   complemento: string | null

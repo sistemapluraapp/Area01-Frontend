@@ -15,6 +15,7 @@ import Horario from '@/components/pagina/Horario'
 import { Contato, Localizacao } from '@/components/pagina/Localizacao'
 import Galeria, { itensDaGaleria } from '@/components/pagina/Galeria'
 import Experiencias from '@/components/pagina/Experiencias'
+import { ApresentacaoLibras, ComoEOLugar } from '@/components/pagina/Inclusao'
 import Avaliacoes from '@/components/pagina/Avaliacoes'
 import { AntesDeIr, Denunciar, Recomendacoes, Seguranca, SelosPrevia } from '@/components/pagina/Complementos'
 import { TemaPaginaContext } from '@/components/pagina/ui'
@@ -95,7 +96,9 @@ function PaginaEmpreendimento() {
       />
       <div style={{ height: '0.25rem' }} />
       <Sobre p={pagina} catalogo={catalogo} />
+      <ApresentacaoLibras p={pagina} />
       <NivelAcessibilidade p={pagina} catalogo={catalogo} />
+      <ComoEOLugar p={pagina} />
       <RecursosEquipamentos p={pagina} catalogo={catalogo} />
       <Horario p={pagina} />
       <Localizacao p={pagina} />
@@ -123,12 +126,12 @@ export default function PaginaPage() {
           <>
             <NotificationBell />
             <button type="button" onClick={() => router.push('/perfil')} aria-label="Minha área" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <IconUser size={18} />
+              <IconUser size={18} aria-hidden />
             </button>
           </>
         }
       />
-      <main style={{ maxWidth: '820px', margin: '0 auto', padding: '5.25rem 1rem 6.5rem', position: 'relative', zIndex: 1 }}>
+      <main id="conteudo" tabIndex={-1} style={{ maxWidth: '820px', margin: '0 auto', padding: '5.25rem 1rem 6.5rem', position: 'relative', zIndex: 1 }}>
         <Suspense fallback={<p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>}>
           <PaginaEmpreendimento />
         </Suspense>

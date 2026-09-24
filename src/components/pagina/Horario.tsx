@@ -29,7 +29,7 @@ export default function Horario({ p }: { p: PaginaPublica }) {
       </TituloSecao>
       <div style={{ display: 'flex', gap: '0.875rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
         <IconeRedondo tamanho={44}>
-          <IconCalendarTime size={22} />
+          <IconCalendarTime size={22} aria-hidden />
         </IconeRedondo>
         <div style={{ flex: '1 1 200px' }}>
           {tem ? (

@@ -50,7 +50,7 @@ function Miniatura({ item, onClick, grande }: { item: Item; onClick: () => void;
         <>
           <span aria-hidden style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.25)' }} />
           <span aria-hidden style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '46px', height: '46px', borderRadius: '50%', background: 'rgba(255,255,255,0.92)', color: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {e360 ? <IconView360 size={24} /> : <IconPlayerPlayFilled size={22} />}
+            {e360 ? <IconView360 size={24} aria-hidden /> : <IconPlayerPlayFilled size={22} aria-hidden />}
           </span>
           <span style={{ position: 'absolute', left: '0.5rem', bottom: '0.5rem', padding: '0.15rem 0.5rem', borderRadius: '9999px', background: 'rgba(0,0,0,0.6)', color: '#fff', fontSize: '0.6875rem', fontWeight: 700 }}>{FORMATO[item.formato ?? 'video']}</span>
         </>
@@ -76,17 +76,17 @@ function Visualizador({ itens, indice, onMudar, onClose }: { itens: Item[]; indi
           <div style={{ padding: '2.5rem 1rem', textAlign: 'center' }}>
             <p style={{ marginBottom: '1rem', color: 'var(--c-text-2)' }}>Este conteúdo abre no site de origem ({item.plataforma}).</p>
             <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1.125rem', borderRadius: '0.75rem', background: 'var(--p-accent)', color: 'var(--p-accent-contrast)', fontWeight: 700, textDecoration: 'none' }}>
-              Abrir {FORMATO[item.formato ?? 'video']?.toLowerCase()} <IconExternalLink size={16} />
+              Abrir {FORMATO[item.formato ?? 'video']?.toLowerCase()} <IconExternalLink size={16} aria-hidden />
             </a>
           </div>
         )}
         {itens.length > 1 && (
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.75rem' }}>
             <button type="button" onClick={() => navegar(-1)} aria-label="Anterior" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0.875rem', borderRadius: '9999px', border: 'var(--c-border)', background: 'transparent', color: 'var(--c-text-1)', fontFamily: 'inherit', cursor: 'pointer' }}>
-              <IconChevronLeft size={18} /> Anterior
+              <IconChevronLeft size={18} aria-hidden /> Anterior
             </button>
             <button type="button" onClick={() => navegar(1)} aria-label="Próxima" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0.875rem', borderRadius: '9999px', border: 'var(--c-border)', background: 'transparent', color: 'var(--c-text-1)', fontFamily: 'inherit', cursor: 'pointer' }}>
-              Próxima <IconChevronRight size={18} />
+              Próxima <IconChevronRight size={18} aria-hidden />
             </button>
           </div>
         )}

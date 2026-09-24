@@ -71,7 +71,7 @@ export function Seguranca({ p }: { p: PaginaPublica }) {
         {campos.map((k) => (
           <div key={k} style={{ display: 'flex', gap: '0.75rem' }}>
             <IconeRedondo tamanho={36}>
-              {k === 'contatos_emergencia' ? <IconAlertTriangle size={18} /> : <IconShieldCheck size={18} />}
+              {k === 'contatos_emergencia' ? <IconAlertTriangle size={18} aria-hidden /> : <IconShieldCheck size={18} aria-hidden />}
             </IconeRedondo>
             <div>
               <dt style={{ fontWeight: 700 }}>{SEGURANCA[k]}</dt>
@@ -92,7 +92,7 @@ export function SelosPrevia() {
       <TituloSecao
         acao={
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '9999px', background: 'var(--p-soft)', color: 'var(--p-accent-text)' }}>
-            <IconSparkles size={14} /> Em breve
+            <IconSparkles size={14} aria-hidden /> Em breve
           </span>
         }
       >

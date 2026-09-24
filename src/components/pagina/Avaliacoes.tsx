@@ -38,7 +38,7 @@ function ModalAvaliar({ p, onClose }: { p: PaginaPublica; onClose: () => void })
       <Modal titulo="Comentário enviado" onClose={onClose} largura={440}>
         <div style={{ textAlign: 'center', padding: '0.5rem 0 0.25rem' }}>
           <span style={{ width: '64px', height: '64px', borderRadius: '50%', margin: '0 auto 1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--c-warning-soft)', color: 'var(--c-warning-text)' }}>
-            <IconHourglassHigh size={32} />
+            <IconHourglassHigh size={32} aria-hidden />
           </span>
           <p style={{ fontWeight: 700, fontSize: '1.0625rem', marginBottom: '0.5rem' }}>Obrigado por compartilhar sua experiência!</p>
           <p style={{ color: 'var(--c-text-2)', lineHeight: 1.6 }}>
@@ -115,7 +115,7 @@ export default function Avaliacoes({ p }: { p: PaginaPublica }) {
       )}
 
       <button type="button" onClick={() => setAvaliando(true)} style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.7rem', borderRadius: '0.875rem', border: '1px solid var(--p-soft-border)', background: 'transparent', color: 'var(--p-accent-text)', fontWeight: 700, fontFamily: 'inherit', fontSize: '0.9375rem', cursor: 'pointer' }}>
-        <IconPencil size={18} /> Avaliar este local
+        <IconPencil size={18} aria-hidden /> Avaliar este local
       </button>
 
       {lista.length > 0 && (

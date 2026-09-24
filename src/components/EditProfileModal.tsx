@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
+import { useFocoPreso } from '@/lib/useFocoPreso'
 import GlassCard from './GlassCard'
 import Input from './Input'
 import Button from './Button'
@@ -36,6 +37,8 @@ export default function EditProfileModal({
   onClose: () => void
   onSaved: (perfil: Perfil) => void
 }) {
+  const refFoco = useRef<HTMLDivElement>(null)
+  useFocoPreso(refFoco)
   const [nome, setNome] = useState(perfil.nome)
   const [nomeSocial, setNomeSocial] = useState(perfil.nome_social ?? '')
   const [cep, setCep] = useState(perfil.cep ?? '')
@@ -104,6 +107,10 @@ export default function EditProfileModal({
 
   return (
     <div
+      ref={refFoco}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="editar-perfil-titulo"
       style={{
         position: 'fixed',
         inset: 0,
@@ -126,7 +133,7 @@ export default function EditProfileModal({
         <GlassCard variant="lg" style={{ padding: '1.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 800, letterSpacing: '-0.035em' }}>Editar perfil</h2>
+              <h2 id="editar-perfil-titulo" style={{ margin: 0, fontSize: '1.375rem', fontWeight: 800, letterSpacing: '-0.035em' }}>Editar perfil</h2>
               <p style={{ margin: '0.25rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-3)' }}>Atualize suas informações pessoais</p>
             </div>
             <button

@@ -116,7 +116,7 @@ export default function PerfilPage() {
 
   if (carregando) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <main id="conteudo" tabIndex={-1} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>
       </main>
     )
@@ -124,7 +124,7 @@ export default function PerfilPage() {
 
   if (!perfil) {
     return (
-      <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <main id="conteudo" tabIndex={-1} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <p style={{ color: 'var(--c-danger-text)' }}>{erro || 'Não foi possível carregar o perfil'}</p>
       </main>
     )
@@ -141,13 +141,13 @@ export default function PerfilPage() {
           <>
             <NotificationBell />
             <button type="button" onClick={sair} aria-label="Sair da conta" title="Sair" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <IconLogout size={18} />
+              <IconLogout size={18} aria-hidden />
             </button>
           </>
         }
       />
 
-      <main style={{ maxWidth: '820px', margin: '0 auto', padding: '5.5rem 1rem 3rem', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <main id="conteudo" tabIndex={-1} style={{ maxWidth: '820px', margin: '0 auto', padding: '5.5rem 1rem 3rem', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <section style={{ background: 'var(--c-glass-bg-lg)', border: 'var(--c-border)', borderRadius: '1.25rem', padding: '1.5rem', boxShadow: 'var(--c-shadow-sm)', display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             type="button"
@@ -157,7 +157,7 @@ export default function PerfilPage() {
           >
             {!perfil.avatar_url && iniciaisDe(nomeExibido)}
             <span aria-hidden style={{ position: 'absolute', right: '-2px', bottom: '-2px', width: '30px', height: '30px', borderRadius: '50%', background: '#1a7aff', border: '2px solid var(--c-glass-bg-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-              <IconCamera size={16} />
+              <IconCamera size={16} aria-hidden />
             </span>
           </button>
           <div style={{ flex: '1 1 220px', minWidth: 0 }}>
@@ -165,7 +165,7 @@ export default function PerfilPage() {
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>CPF {formatarCpf(perfil.cpf)}</p>
             {(perfil.cidade || perfil.uf) && <p style={{ margin: '0.2rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>{[perfil.cidade, perfil.uf].filter(Boolean).join(' - ')}</p>}
             <button type="button" onClick={() => setEditando(true)} style={{ ...botaoSecundario, marginTop: '0.75rem' }}>
-              <IconSettings size={16} /> Editar perfil
+              <IconSettings size={16} aria-hidden /> Editar perfil
             </button>
           </div>
           <dl style={{ display: 'flex', gap: '1.5rem', margin: 0 }}>
@@ -193,7 +193,7 @@ export default function PerfilPage() {
               }}
               style={botaoPrimario}
             >
-              <IconPlus size={16} /> Adicionar preferências
+              <IconPlus size={16} aria-hidden /> Adicionar preferências
             </button>
           }
         >
@@ -230,7 +230,7 @@ export default function PerfilPage() {
           titulo="Meus empreendimentos"
           acao={
             <a href={urlGerenciar('/nova-pagina')} style={botaoPrimario}>
-              <IconPlus size={16} /> Cadastrar
+              <IconPlus size={16} aria-hidden /> Cadastrar
             </a>
           }
         >
@@ -262,7 +262,7 @@ export default function PerfilPage() {
                         Ver página
                       </a>
                       <a href={urlGerenciar(`/pagina?id=${e.id}`)} style={botaoPrimario}>
-                        Gerenciar <IconExternalLink size={15} />
+                        Gerenciar <IconExternalLink size={15} aria-hidden />
                       </a>
                     </div>
                   </li>

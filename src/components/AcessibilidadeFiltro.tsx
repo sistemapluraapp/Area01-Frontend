@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useFocoPreso } from '@/lib/useFocoPreso'
 import { IconAdjustmentsHorizontal, IconCheck, IconX } from '@tabler/icons-react'
 import type { RecursoAcessibilidade } from '@/lib/api'
 import { useFiltrosAcessibilidade } from '@/lib/useFiltrosAcessibilidade'
@@ -21,6 +22,8 @@ export default function AcessibilidadeFiltro({
   const { catalogo, recursos } = useCatalogo()
   const [aberto, setAberto] = useState(false)
   const [rascunho, setRascunho] = useState<RecursoAcessibilidade[]>(value)
+  const refFoco = useRef<HTMLDivElement>(null)
+  useFocoPreso(refFoco, aberto)
 
   const grupos = useMemo(() => {
     const lista: { id: string; label: string; icone: string | null; itens: { value: string; label: string }[] }[] = []
@@ -108,6 +111,7 @@ export default function AcessibilidadeFiltro({
       {aberto && (
         <Portal>
           <div
+            ref={refFoco}
             role="dialog"
             aria-modal="true"
             aria-label="Filtrar por acessibilidade"
@@ -124,7 +128,7 @@ export default function AcessibilidadeFiltro({
                   <p style={{ margin: '0.125rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>Mostra só os lugares que têm todos os recursos escolhidos.</p>
                 </div>
                 <button type="button" onClick={() => setAberto(false)} aria-label="Fechar" style={{ background: 'none', border: 'none', color: 'var(--c-text-2)', cursor: 'pointer', display: 'flex', padding: '0.25rem' }}>
-                  <IconX size={22} />
+                  <IconX size={22} aria-hidden />
                 </button>
               </div>
 
@@ -168,7 +172,7 @@ export default function AcessibilidadeFiltro({
                   Limpar
                 </button>
                 <button type="button" onClick={aplicar} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.75rem 1.5rem', borderRadius: '0.875rem', border: 'none', background: 'linear-gradient(135deg,#1a7aff,#0062e6)', color: '#fff', fontWeight: 700, fontSize: '0.9375rem', fontFamily: 'inherit', cursor: 'pointer' }}>
-                  <IconCheck size={18} /> Aplicar filtros{rascunho.length ? ` (${rascunho.length})` : ''}
+                  <IconCheck size={18} aria-hidden /> Aplicar filtros{rascunho.length ? ` (${rascunho.length})` : ''}
                 </button>
               </div>
             </div>

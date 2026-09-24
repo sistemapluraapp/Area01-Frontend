@@ -53,9 +53,9 @@ export function Localizacao({ p }: { p: PaginaPublica }) {
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        {p.rota_acessivel && <Rota icone={<IconWheelchair size={20} />} titulo="Como chegar com cadeira de rodas" texto={p.rota_acessivel} destaque />}
-        {p.como_chegar_carro && <Rota icone={<IconCar size={20} />} titulo="Como chegar de carro" texto={p.como_chegar_carro} />}
-        {p.como_chegar_transporte && <Rota icone={<IconBus size={20} />} titulo="Como chegar de transporte público" texto={p.como_chegar_transporte} />}
+        {p.rota_acessivel && <Rota icone={<IconWheelchair size={20} aria-hidden />} titulo="Como chegar com cadeira de rodas" texto={p.rota_acessivel} destaque />}
+        {p.como_chegar_carro && <Rota icone={<IconCar size={20} aria-hidden />} titulo="Como chegar de carro" texto={p.como_chegar_carro} />}
+        {p.como_chegar_transporte && <Rota icone={<IconBus size={20} aria-hidden />} titulo="Como chegar de transporte público" texto={p.como_chegar_transporte} />}
       </div>
     </Cartao>
   )
