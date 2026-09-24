@@ -159,6 +159,8 @@ export default function SignupPage() {
                   setErrors((p) => ({ ...p, cpf: '' }))
                 }}
                 error={errors.cpf}
+                helperText="Usado para que empreendimentos possam adicionar você à equipe ou como parceiro."
+                inputMode="numeric"
                 leadingIcon={<IdIcon />}
               />
               <Input

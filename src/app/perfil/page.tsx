@@ -162,7 +162,7 @@ export default function PerfilPage() {
           </button>
           <div style={{ flex: '1 1 220px', minWidth: 0 }}>
             <h1 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 800 }}>{nomeExibido}</h1>
-            <p style={{ margin: '0.2rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)' }}>cpf {formatarCpf(perfil.cpf)}</p>
+            <p style={{ margin: '0.2rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>CPF {formatarCpf(perfil.cpf)}</p>
             {(perfil.cidade || perfil.uf) && <p style={{ margin: '0.2rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>{[perfil.cidade, perfil.uf].filter(Boolean).join(' - ')}</p>}
             <button type="button" onClick={() => setEditando(true)} style={{ ...botaoSecundario, marginTop: '0.75rem' }}>
               <IconSettings size={16} /> Editar perfil

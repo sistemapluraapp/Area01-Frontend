@@ -5,8 +5,9 @@ import GlassCard from './GlassCard'
 import Input from './Input'
 import Button from './Button'
 import AccessibilityTree from './AccessibilityTree'
-import { CloseIcon, EmailIcon, MapPinIcon, SmileIcon, UserIcon } from './icons'
+import { CloseIcon, EmailIcon, IdIcon, MapPinIcon, SmileIcon, UserIcon } from './icons'
 import { api, type NecessidadeAcessibilidade, type Perfil } from '@/lib/api'
+import { formatarCpf } from '@/lib/cpf'
 
 function formatarCep(valor: string): string {
   const digitos = valor.replace(/\D/g, '').slice(0, 8)
@@ -174,6 +175,30 @@ export default function EditProfileModal({
               <Input label="Nome completo" value={nome} onChange={(e) => setNome(e.target.value)} leadingIcon={<UserIcon />} required />
               <div style={{ position: 'relative' }}>
                 <Input label="E-mail" type="email" value={email} disabled leadingIcon={<EmailIcon />} />
+                <span
+                  style={{
+                    position: 'absolute',
+                    right: '0.875rem',
+                    top: '2.3rem',
+                    fontSize: '0.625rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--c-text-4, var(--c-text-3))',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  não editável
+                </span>
+              </div>
+              <div style={{ position: 'relative' }}>
+                <Input
+                  label="CPF"
+                  value={formatarCpf(perfil.cpf)}
+                  disabled
+                  leadingIcon={<IdIcon />}
+                  helperText="É pelo CPF que administradores de empreendimentos adicionam você à equipe ou como parceiro."
+                />
                 <span
                   style={{
                     position: 'absolute',
