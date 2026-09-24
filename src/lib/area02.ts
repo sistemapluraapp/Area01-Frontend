@@ -3,7 +3,7 @@ import { obterRefreshToken, obterToken, obterUsuarioSalvo } from './auth'
 // Painel de gestão de empreendimentos (Área 02). O botão "Gerenciar" leva a
 // sessão junto, pelo fragmento da URL (#...), que o navegador não envia ao
 // servidor; a página /sessao da Área 02 grava a sessão e apaga o fragmento.
-const AREA02_URL = process.env.NEXT_PUBLIC_AREA02_FRONTEND_URL ?? 'https://area02-frontend.pages.dev'
+const AREA02_URL = process.env.NEXT_PUBLIC_AREA02_FRONTEND_URL ?? 'https://login.plura.app.br'
 
 export function urlGerenciar(destino: string): string {
   const token = obterToken()
