@@ -34,26 +34,30 @@ export default function HomePage() {
   const [filtroAcessibilidade, setFiltroAcessibilidade] = useState<RecursoAcessibilidade[]>([])
   const [apenasLibras, setApenasLibras] = useState(false)
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set())
+  const [logado, setLogado] = useState(false)
 
   useEffect(() => {
-    // Busca e páginas exigem login: quem chega por um link compartilhado cai no cadastro/login
-    if (!estaLogado()) {
-      router.replace('/login')
-      return
-    }
+    // A busca é aberta a visitantes; salvar destinos e ver a página completa pedem login
+    const temLogin = estaLogado()
+    setLogado(temLogin)
     setPronto(true)
     api
       .buscarPaginas('')
       .then(({ resultados }) => setResultados(resultados))
       .catch((e) => setErro(e instanceof Error ? e.message : 'Erro ao carregar'))
       .finally(() => setLoading(false))
+    if (!temLogin) return
     api
       .listarFavoritos()
       .then(({ favoritos }) => setFavoritosIds(new Set(favoritos.map((f) => f.paginas.id))))
       .catch(() => {})
-  }, [router])
+  }, [])
 
   async function alternarFavorito(paginaId: string) {
+    if (!logado) {
+      router.push('/login?destino=/')
+      return
+    }
     const jaFavoritado = favoritosIds.has(paginaId)
     const alterar = (adicionar: boolean) =>
       setFavoritosIds((atual) => {
@@ -94,12 +98,18 @@ export default function HomePage() {
       <Grain />
       <Header
         right={
+          !logado ? (
+            <a href="/login?destino=/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', height: '38px', padding: '0 1rem', borderRadius: '0.75rem', background: 'linear-gradient(135deg,#1a7aff,#0062e6)', color: '#fff', fontWeight: 700, fontSize: '0.875rem', textDecoration: 'none', flexShrink: 0 }}>
+              Entrar
+            </a>
+          ) : (
           <>
             <NotificationBell />
             <button type="button" onClick={() => router.push('/perfil')} aria-label="Minha área" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <IconUser size={18} aria-hidden />
             </button>
           </>
+          )
         }
       />
 
@@ -162,6 +172,12 @@ export default function HomePage() {
         </div>
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.25rem' }}>
+          {!logado && (
+            <p style={{ margin: '0 0 1rem', padding: '0.75rem 1rem', borderRadius: '0.875rem', background: 'var(--c-accent-soft)', border: '1px solid var(--c-accent-soft-border)', fontSize: '0.875rem', color: 'var(--c-text-1)' }}>
+              <a href="/login?destino=/" style={{ color: 'var(--c-accent-text)', fontWeight: 700 }}>Entre</a> ou{' '}
+              <a href="/signup" style={{ color: 'var(--c-accent-text)', fontWeight: 700 }}>crie sua conta</a> para ver a página completa de cada lugar, salvar destinos e avaliar.
+            </p>
+          )}
           {erro && <p role="alert" style={{ color: 'var(--c-danger-text)', marginBottom: '1rem' }}>{erro}</p>}
           {!loading && (
             <p aria-live="polite" style={{ fontSize: '0.875rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)', marginBottom: '1rem' }}>

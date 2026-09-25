@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { IconHandLoveYou, IconTextSize, IconX } from '@tabler/icons-react'
 import { api } from '@/lib/api'
 import { obterPreferencias, salvarPreferencias } from '@/lib/acessibilidade'
+import { estaLogado } from '@/lib/auth'
 
 const CHAVE_VISTA = 'plura_sugestao_acessibilidade'
 
@@ -15,6 +16,7 @@ export default function SugestaoAcessibilidade() {
   const [sugestao, setSugestao] = useState<Sugestao | null>(null)
 
   useEffect(() => {
+    if (!estaLogado()) return
     try {
       if (localStorage.getItem(CHAVE_VISTA)) return
     } catch {
