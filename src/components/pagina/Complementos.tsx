@@ -7,6 +7,7 @@ import CardPagina from '../CardPagina'
 import { Cartao, IconeRedondo, Modal, TituloSecao } from './ui'
 import { api, type MotivoDenuncia, type PaginaPublica } from '@/lib/api'
 import type { useCatalogo } from '@/lib/useCatalogo'
+import { exigirLogin } from '@/lib/exigirLogin'
 
 type Catalogo = ReturnType<typeof useCatalogo>
 
@@ -146,7 +147,7 @@ export function Denunciar({ p }: { p: PaginaPublica }) {
 
   return (
     <>
-      <button type="button" onClick={() => setAberto(true)} style={{ alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'none', border: 'none', color: 'var(--c-text-2)', fontSize: '0.875rem', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+      <button type="button" onClick={() => exigirLogin() && setAberto(true)} style={{ alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'none', border: 'none', color: 'var(--c-text-2)', fontSize: '0.875rem', fontWeight: 600, fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
         <IconFlag size={16} aria-hidden /> Essa informação está incorreta?
       </button>
       {aberto && (

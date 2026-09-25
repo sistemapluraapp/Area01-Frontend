@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { IconHourglassHigh, IconPencil, IconStarFilled } from '@tabler/icons-react'
 import { Cartao, Estrelas, LinkAcao, Modal, TituloSecao, formatarNota } from './ui'
 import { api, type PaginaPublica } from '@/lib/api'
+import { exigirLogin } from '@/lib/exigirLogin'
 
 function iniciais(nome: string) {
   return nome.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase()
@@ -114,7 +115,7 @@ export default function Avaliacoes({ p }: { p: PaginaPublica }) {
         <p style={{ color: 'var(--c-text-2)', marginBottom: '1rem' }}>Ainda não há avaliações publicadas. Seja a primeira pessoa a contar como foi!</p>
       )}
 
-      <button type="button" onClick={() => setAvaliando(true)} style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.7rem', borderRadius: '0.875rem', border: '1px solid var(--p-soft-border)', background: 'transparent', color: 'var(--p-accent-text)', fontWeight: 700, fontFamily: 'inherit', fontSize: '0.9375rem', cursor: 'pointer' }}>
+      <button type="button" onClick={() => exigirLogin() && setAvaliando(true)} style={{ width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.7rem', borderRadius: '0.875rem', border: '1px solid var(--p-soft-border)', background: 'transparent', color: 'var(--p-accent-text)', fontWeight: 700, fontFamily: 'inherit', fontSize: '0.9375rem', cursor: 'pointer' }}>
         <IconPencil size={18} aria-hidden /> Avaliar este local
       </button>
 

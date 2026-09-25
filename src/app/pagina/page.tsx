@@ -1,12 +1,11 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { IconUser } from '@tabler/icons-react'
+import { useSearchParams } from 'next/navigation'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import NotificationBell from '@/components/NotificationBell'
+import AcoesTopo from '@/components/AcoesTopo'
 import BottomNav from '@/components/BottomNav'
 import Cabecalho from '@/components/pagina/Cabecalho'
 import Sobre from '@/components/pagina/Sobre'
@@ -21,11 +20,11 @@ import { AntesDeIr, Denunciar, Recomendacoes, Seguranca, SelosPrevia } from '@/c
 import { TemaPaginaContext } from '@/components/pagina/ui'
 import { api, type PaginaPublica } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
+import { exigirLogin } from '@/lib/exigirLogin'
 import { temaValido } from '@/lib/temasPagina'
 import { useCatalogo } from '@/lib/useCatalogo'
 
 function PaginaEmpreendimento() {
-  const router = useRouter()
   const params = useSearchParams()
   const id = params.get('id') ?? ''
   const catalogo = useCatalogo()
@@ -34,10 +33,7 @@ function PaginaEmpreendimento() {
   const [favoritado, setFavoritado] = useState(false)
 
   useEffect(() => {
-    if (!estaLogado()) {
-      router.replace(`/login?destino=${encodeURIComponent(`/pagina?id=${id}`)}`)
-      return
-    }
+    // A página é aberta a visitantes; salvar, avaliar e denunciar pedem login
     if (!id) {
       setErro('Página não encontrada')
       return
@@ -49,13 +45,15 @@ function PaginaEmpreendimento() {
         document.title = `${p.nome} | Plura`
       })
       .catch((e) => setErro(e instanceof Error ? e.message : 'Página não encontrada'))
+    if (!estaLogado()) return
     api
       .listarFavoritos()
       .then(({ favoritos }) => setFavoritado(favoritos.some((f) => f.paginas.id === id)))
       .catch(() => {})
-  }, [id, router])
+  }, [id])
 
   async function alternarFavorito() {
+    if (!exigirLogin()) return
     const antes = favoritado
     setFavoritado(!antes)
     try {
@@ -117,19 +115,11 @@ function PaginaEmpreendimento() {
 }
 
 export default function PaginaPage() {
-  const router = useRouter()
   return (
     <>
       <Grain />
       <Header
-        right={
-          <>
-            <NotificationBell />
-            <button type="button" onClick={() => router.push('/perfil')} aria-label="Minha área" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <IconUser size={18} aria-hidden />
-            </button>
-          </>
-        }
+        right={<AcoesTopo />}
       />
       <main id="conteudo" tabIndex={-1} style={{ maxWidth: '820px', margin: '0 auto', padding: '5.25rem 1rem 6.5rem', position: 'relative', zIndex: 1 }}>
         <Suspense fallback={<p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>}>

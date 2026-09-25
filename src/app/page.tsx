@@ -175,7 +175,7 @@ export default function HomePage() {
           {!logado && (
             <p style={{ margin: '0 0 1rem', padding: '0.75rem 1rem', borderRadius: '0.875rem', background: 'var(--c-accent-soft)', border: '1px solid var(--c-accent-soft-border)', fontSize: '0.875rem', color: 'var(--c-text-1)' }}>
               <a href="/login?destino=/" style={{ color: 'var(--c-accent-text)', fontWeight: 700 }}>Entre</a> ou{' '}
-              <a href="/signup" style={{ color: 'var(--c-accent-text)', fontWeight: 700 }}>crie sua conta</a> para ver a página completa de cada lugar, salvar destinos e avaliar.
+              <a href="/signup" style={{ color: 'var(--c-accent-text)', fontWeight: 700 }}>crie sua conta</a> para salvar destinos, avaliar lugares e receber sugestões para você.
             </p>
           )}
           {erro && <p role="alert" style={{ color: 'var(--c-danger-text)', marginBottom: '1rem' }}>{erro}</p>}
