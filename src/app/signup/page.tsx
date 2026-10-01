@@ -17,6 +17,7 @@ import { aplicarPreferencias, guardarPreferenciasPendentes } from '@/lib/prefere
 import { formatarCpf } from '@/lib/cpf'
 import { LOGO_DATA_URI } from '@/lib/logo'
 import { useTituloPagina } from '@/lib/useTituloPagina'
+import CheckboxTermos from '@/components/CheckboxTermos'
 
 function SectionLabel({ label }: { label: string }) {
   return (
@@ -76,6 +77,7 @@ export default function SignupPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [generalError, setGeneralError] = useState('')
   const [preferencias, setPreferencias] = useState<string[]>([])
+  const [aceite, setAceite] = useState(false)
 
   function validate() {
     const e: Record<string, string> = {}
@@ -84,6 +86,7 @@ export default function SignupPage() {
     if (!email.includes('@')) e.email = 'E-mail inválido'
     if (senha.length < 6) e.senha = 'Mínimo 6 caracteres'
     if (senha !== confirma) e.confirma = 'As senhas não coincidem'
+    if (!aceite) e.termos = 'Para criar a conta, aceite os termos e condições'
     return e
   }
 
@@ -98,7 +101,7 @@ export default function SignupPage() {
     setGeneralError('')
     setLoading(true)
     try {
-      const resposta = await api.signup({ email: email.trim(), password: senha, cpf, nome: nome.trim() })
+      const resposta = await api.signup({ email: email.trim(), password: senha, cpf, nome: nome.trim(), aceite_termos: aceite })
       if ('pending_email_confirmation' in resposta) {
         guardarPreferenciasPendentes(preferencias)
         setShowSuccess(true)
@@ -233,6 +236,16 @@ export default function SignupPage() {
               O que você gosta de fazer? Opcional — ajuda a Plura a sugerir lugares para você. Dá para mudar depois no perfil.
             </p>
             <PreferenciasTurismo valor={preferencias} onChange={setPreferencias} />
+
+            <CheckboxTermos
+              chave="termos_usuario"
+              aceito={aceite}
+              onChange={(v) => {
+                setAceite(v)
+                setErrors((p) => ({ ...p, termos: '' }))
+              }}
+              erro={errors.termos}
+            />
 
             <Button type="submit" size="lg" loading={loading} style={{ width: '100%', marginTop: '1.75rem' }}>
               {loading ? 'Criando conta…' : 'Criar conta'}

@@ -316,10 +316,12 @@ export interface ConteudoPagina {
 export const api = {
   conteudoPagina: (chave: string) => request<ConteudoPagina>(`/conteudo/${chave}`),
 
+  termo: (chave: string) => request<import('@/components/CheckboxTermos').Termo>(`/termos/${chave}`),
+
   reenviarConfirmacao: (email: string) =>
     request<{ message: string }>('/auth/reenviar-confirmacao', { method: 'POST', body: JSON.stringify({ email }) }),
 
-  signup: (body: { email: string; password: string; cpf: string; nome: string }) =>
+  signup: (body: { email: string; password: string; cpf: string; nome: string; aceite_termos: boolean }) =>
     request<AuthResponse | { message: string; pending_email_confirmation: true }>('/auth/signup', {
       method: 'POST',
       body: JSON.stringify(body),
