@@ -305,7 +305,20 @@ export interface Notificacao {
   metadata: Record<string, unknown>
 }
 
+// Conteúdo das páginas de boas-vindas, editado no ADM
+export interface ConteudoPagina {
+  titulo: string | null
+  corpo_html: string | null
+  botao_texto: string | null
+  imagem_url: string | null
+}
+
 export const api = {
+  conteudoPagina: (chave: string) => request<ConteudoPagina>(`/conteudo/${chave}`),
+
+  reenviarConfirmacao: (email: string) =>
+    request<{ message: string }>('/auth/reenviar-confirmacao', { method: 'POST', body: JSON.stringify({ email }) }),
+
   signup: (body: { email: string; password: string; cpf: string; nome: string }) =>
     request<AuthResponse | { message: string; pending_email_confirmation: true }>('/auth/signup', {
       method: 'POST',

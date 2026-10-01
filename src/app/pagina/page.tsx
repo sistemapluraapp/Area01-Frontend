@@ -23,6 +23,7 @@ import { estaLogado } from '@/lib/auth'
 import { exigirLogin } from '@/lib/exigirLogin'
 import { temaValido } from '@/lib/temasPagina'
 import { useCatalogo } from '@/lib/useCatalogo'
+import { useTituloPagina } from '@/lib/useTituloPagina'
 
 function PaginaEmpreendimento() {
   const params = useSearchParams()
@@ -31,6 +32,7 @@ function PaginaEmpreendimento() {
   const [pagina, setPagina] = useState<PaginaPublica | null>(null)
   const [erro, setErro] = useState('')
   const [favoritado, setFavoritado] = useState(false)
+  useTituloPagina(pagina?.nome ?? (erro ? 'Página não encontrada' : null))
 
   useEffect(() => {
     // A página é aberta a visitantes; salvar, avaliar e denunciar pedem login
@@ -42,7 +44,6 @@ function PaginaEmpreendimento() {
       .obterPagina(id)
       .then((p) => {
         setPagina(p)
-        document.title = `${p.nome} · Plura`
       })
       .catch((e) => setErro(e instanceof Error ? e.message : 'Página não encontrada'))
     if (!estaLogado()) return
