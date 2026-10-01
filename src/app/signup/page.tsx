@@ -16,6 +16,7 @@ import PreferenciasTurismo from '@/components/PreferenciasTurismo'
 import { aplicarPreferencias, guardarPreferenciasPendentes } from '@/lib/preferenciasPendentes'
 import { formatarCpf } from '@/lib/cpf'
 import { LOGO_DATA_URI } from '@/lib/logo'
+import { useTituloPagina } from '@/lib/useTituloPagina'
 
 function SectionLabel({ label }: { label: string }) {
   return (
@@ -61,6 +62,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function SignupPage() {
+  useTituloPagina('Criar conta')
   const router = useRouter()
   const [nome, setNome] = useState('')
   const [cpf, setCpf] = useState('')

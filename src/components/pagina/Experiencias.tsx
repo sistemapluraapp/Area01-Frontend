@@ -80,13 +80,13 @@ export default function Experiencias({ p, catalogo }: { p: PaginaPublica; catalo
           {aberta.equipamentos && (
             <div style={{ marginTop: '0.75rem' }}>
               <p style={{ fontWeight: 700, marginBottom: '0.25rem' }}>Equipamentos fornecidos</p>
-              <p style={{ color: 'var(--c-text-2)', whiteSpace: 'pre-line', fontSize: '0.9375rem' }}>{aberta.equipamentos}</p>
+              <div style={{ color: 'var(--c-text-2)', fontSize: '0.9375rem' }}><TextoFormatado texto={aberta.equipamentos} /></div>
             </div>
           )}
           {aberta.o_que_levar && (
             <div style={{ marginTop: '0.75rem' }}>
               <p style={{ fontWeight: 700, marginBottom: '0.25rem' }}>O que levar</p>
-              <p style={{ color: 'var(--c-text-2)', whiteSpace: 'pre-line', fontSize: '0.9375rem' }}>{aberta.o_que_levar}</p>
+              <div style={{ color: 'var(--c-text-2)', fontSize: '0.9375rem' }}><TextoFormatado texto={aberta.o_que_levar} /></div>
             </div>
           )}
         </Modal>

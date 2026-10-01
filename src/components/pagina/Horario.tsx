@@ -5,6 +5,7 @@ import { IconCalendarTime } from '@tabler/icons-react'
 import { BotaoContorno, Cartao, IconeRedondo, Modal, TextoFormatado, TituloSecao } from './ui'
 import type { PaginaPublica } from '@/lib/api'
 import { DIAS, abertoAgora, hojeCodigo, resumoHorarios, temHorarios, turnosDoDia } from '@/lib/horarios'
+import { textoVisivel } from '@/lib/textoRico'
 
 export default function Horario({ p }: { p: PaginaPublica }) {
   const [aberto, setAberto] = useState(false)
@@ -41,7 +42,7 @@ export default function Horario({ p }: { p: PaginaPublica }) {
           ) : (
             <p style={{ margin: 0, color: 'var(--c-text-2)' }}>Horários não informados.</p>
           )}
-          {p.feriados && <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>Feriados: {p.feriados.split('\n')[0]}</p>}
+          {p.feriados && <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>Feriados: {textoVisivel(p.feriados).split('\n')[0]}</p>}
         </div>
         <BotaoContorno onClick={() => setAberto(true)}>Ver calendário completo</BotaoContorno>
       </div>

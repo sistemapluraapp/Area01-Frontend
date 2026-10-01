@@ -15,8 +15,10 @@ import { salvarSessao } from '@/lib/auth'
 import { destinoSeguro } from '@/lib/destino'
 import { aplicarPreferencias } from '@/lib/preferenciasPendentes'
 import { LOGO_DATA_URI } from '@/lib/logo'
+import { useTituloPagina } from '@/lib/useTituloPagina'
 
 export default function LoginPage() {
+  useTituloPagina('Entrar')
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

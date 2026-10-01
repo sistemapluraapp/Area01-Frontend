@@ -42,7 +42,7 @@ function PaginaEmpreendimento() {
       .obterPagina(id)
       .then((p) => {
         setPagina(p)
-        document.title = `${p.nome} | Plura`
+        document.title = `${p.nome} · Plura`
       })
       .catch((e) => setErro(e instanceof Error ? e.message : 'Página não encontrada'))
     if (!estaLogado()) return

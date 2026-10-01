@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useRef, type CSSProperties, type 
 import { useFocoPreso } from '@/lib/useFocoPreso'
 import { IconStarFilled, IconStarHalfFilled, IconX } from '@tabler/icons-react'
 import Portal from '../Portal'
+import TextoRico from '@/components/TextoRico'
+import { pareceHtml } from '@/lib/textoRico'
 
 // Cor da página atual. Os modais são renderizados direto no <body> (fora do
 // contêiner [data-tema]), então levam o tema junto por este contexto.
@@ -145,7 +147,9 @@ export function IconeRedondo({ children, tamanho = 44, cheio = false }: { childr
 
 // Texto livre: parágrafos separados por linha em branco, "- " vira lista e
 // links http(s) ficam clicáveis. Tudo renderizado como texto (sem HTML).
+// Textos salvos pelo editor com formatação (HTML) vão para o TextoRico, que higieniza.
 export function TextoFormatado({ texto }: { texto: string }) {
+  if (pareceHtml(texto)) return <TextoRico valor={texto} />
   const blocos = texto.trim().split(/\n\s*\n/)
   const comLinks = (linha: string) =>
     linha.split(/(https?:\/\/[^\s]+)/g).map((parte, i) =>

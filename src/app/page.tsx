@@ -17,12 +17,14 @@ import { api, type PaginaCard, type RecursoAcessibilidade } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
 import { LOGO_DATA_URI } from '@/lib/logo'
 import { useCatalogo } from '@/lib/useCatalogo'
+import { useTituloPagina } from '@/lib/useTituloPagina'
 
 function normalizar(texto: string) {
   return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 }
 
 export default function HomePage() {
+  useTituloPagina('Buscar lugares acessíveis')
   const router = useRouter()
   const catalogo = useCatalogo()
   const [pronto, setPronto] = useState(false)

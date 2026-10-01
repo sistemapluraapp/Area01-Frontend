@@ -20,6 +20,7 @@ import { urlGerenciar } from '@/lib/area02'
 import { estaLogado, limparSessao, obterUsuarioSalvo } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
 import { useCatalogo } from '@/lib/useCatalogo'
+import { useTituloPagina } from '@/lib/useTituloPagina'
 
 function iniciaisDe(nome: string): string {
   return nome.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase()
@@ -47,6 +48,7 @@ const botaoPrimario = { display: 'inline-flex', alignItems: 'center', gap: '0.37
 const botaoSecundario = { display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 0.875rem', borderRadius: '0.75rem', border: '1px solid var(--c-btn-secondary-border)', background: 'var(--c-btn-secondary-bg)', color: 'var(--c-text-1)', fontWeight: 600, fontSize: '0.8125rem', fontFamily: 'inherit', cursor: 'pointer', textDecoration: 'none' } as const
 
 export default function PerfilPage() {
+  useTituloPagina('Meu perfil')
   const router = useRouter()
   const catalogo = useCatalogo()
   const [perfil, setPerfil] = useState<Perfil | null>(null)

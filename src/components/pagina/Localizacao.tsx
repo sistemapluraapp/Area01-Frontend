@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react'
 import { IconBrandInstagram, IconBrandWhatsapp, IconBus, IconCar, IconChevronDown, IconMapPin, IconWheelchair, IconWorld } from '@tabler/icons-react'
-import { Cartao, LinkAcao, TituloSecao } from './ui'
+import { Cartao, LinkAcao, TextoFormatado, TituloSecao } from './ui'
 import { urlComoChegar, urlWhatsapp, useDistancia } from './Cabecalho'
 import type { PaginaPublica } from '@/lib/api'
 
@@ -15,7 +15,7 @@ function Rota({ icone, titulo, texto, destaque }: { icone: ReactNode; titulo: st
         <span style={{ flex: 1 }}>{titulo}</span>
         <IconChevronDown size={18} style={{ transform: aberto ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease' }} aria-hidden />
       </button>
-      {aberto && <p style={{ margin: 0, padding: '0 0.875rem 0.875rem 2.75rem', fontSize: '0.9rem', color: 'var(--c-text-2)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>{texto}</p>}
+      {aberto && <div style={{ margin: 0, padding: '0 0.875rem 0.875rem 2.75rem', fontSize: '0.9rem', color: 'var(--c-text-2)', lineHeight: 1.6 }}><TextoFormatado texto={texto} /></div>}
     </div>
   )
 }

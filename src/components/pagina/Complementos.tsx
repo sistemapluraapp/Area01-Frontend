@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { IconAlertTriangle, IconCircleCheckFilled, IconFlag, IconRosetteDiscountCheck, IconShieldCheck, IconSparkles } from '@tabler/icons-react'
 import Icone from '../Icone'
 import CardPagina from '../CardPagina'
-import { Cartao, IconeRedondo, Modal, TituloSecao } from './ui'
+import { Cartao, IconeRedondo, Modal, TextoFormatado, TituloSecao } from './ui'
 import { api, type MotivoDenuncia, type PaginaPublica } from '@/lib/api'
 import type { useCatalogo } from '@/lib/useCatalogo'
 import { exigirLogin } from '@/lib/exigirLogin'
@@ -76,7 +76,7 @@ export function Seguranca({ p }: { p: PaginaPublica }) {
             </IconeRedondo>
             <div>
               <dt style={{ fontWeight: 700 }}>{SEGURANCA[k]}</dt>
-              <dd style={{ margin: '0.125rem 0 0', color: 'var(--c-text-2)', fontSize: '0.9375rem', lineHeight: 1.6, whiteSpace: 'pre-line' }}>{p.seguranca[k]}</dd>
+              <dd style={{ margin: '0.125rem 0 0', color: 'var(--c-text-2)', fontSize: '0.9375rem', lineHeight: 1.6 }}><TextoFormatado texto={p.seguranca[k]} /></dd>
             </div>
           </div>
         ))}

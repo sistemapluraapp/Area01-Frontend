@@ -384,3 +384,14 @@ html[data-movimento='reduzido'] *, html[data-movimento='reduzido'] *::before, ht
 :root[data-contraste='alto'] *, :root[data-contraste='alto'] *::before, :root[data-contraste='alto'] *::after { backdrop-filter: none !important; text-shadow: none !important; }
 :root[data-contraste='alto'] :focus-visible { outline-color: #ffe000 !important; }
 :root[data-contraste='alto'] .pular-conteudo { background: #ffe000; color: #000000; }
+
+/* Texto com formatação vindo do EditorRico (Áreas 02/03) */
+.texto-rico { line-height: 1.7; overflow-wrap: anywhere; }
+.texto-rico > :first-child { margin-top: 0; }
+.texto-rico > :last-child { margin-bottom: 0; }
+.texto-rico p { margin: 0 0 0.75rem; }
+.texto-rico h3 { font-size: 1.0625em; font-weight: 700; margin: 1em 0 0.5em; }
+.texto-rico h4 { font-size: 1em; font-weight: 700; margin: 1em 0 0.5em; }
+.texto-rico ul, .texto-rico ol { margin: 0 0 0.75rem; padding-left: 1.25rem; }
+.texto-rico li > p { margin: 0; }
+.texto-rico a { color: var(--p-accent-text, var(--c-accent-text)); word-break: break-all; }
