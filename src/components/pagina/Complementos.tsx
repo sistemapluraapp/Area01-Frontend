@@ -36,11 +36,14 @@ export function AntesDeIr({ p, catalogo }: { p: PaginaPublica; catalogo: Catalog
       <TituloSecao>Antes de ir</TituloSecao>
       <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.625rem 1rem' }}>
         {itens.map((i) => (
-          <li key={i.codigo} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9375rem' }}>
-            <span style={{ color: 'var(--p-accent-text)', display: 'flex' }}>
+          <li key={i.codigo} style={{ display: 'flex', alignItems: i.descricao ? 'flex-start' : 'center', gap: '0.5rem', fontSize: '0.9375rem' }}>
+            <span style={{ color: 'var(--p-accent-text)', display: 'flex', flexShrink: 0 }}>
               <Icone nome={i.icone} size={20} />
             </span>
-            {i.rotulo}
+            <span>
+              <span style={{ display: 'block', fontWeight: i.descricao ? 700 : 400 }}>{i.rotulo}</span>
+              {i.descricao && <span style={{ display: 'block', fontSize: '0.875rem', color: 'var(--c-text-2)', lineHeight: 1.5 }}>{i.descricao}</span>}
+            </span>
           </li>
         ))}
         {extras.map((e) => (

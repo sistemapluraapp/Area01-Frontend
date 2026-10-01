@@ -24,6 +24,7 @@ import type { useCatalogo } from '@/lib/useCatalogo'
 type Catalogo = ReturnType<typeof useCatalogo>
 
 export function urlComoChegar(p: PaginaPublica): string {
+  if (p.mapa_link) return p.mapa_link
   const destino = p.latitude != null && p.longitude != null ? `${p.latitude},${p.longitude}` : [p.endereco, p.cidade, p.uf].filter(Boolean).join(', ')
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}`
 }

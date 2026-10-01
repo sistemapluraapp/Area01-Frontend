@@ -5,7 +5,6 @@ import { IconCalendarTime } from '@tabler/icons-react'
 import { BotaoContorno, Cartao, IconeRedondo, Modal, TextoFormatado, TituloSecao } from './ui'
 import type { PaginaPublica } from '@/lib/api'
 import { DIAS, abertoAgora, hojeCodigo, resumoHorarios, temHorarios, turnosDoDia } from '@/lib/horarios'
-import { textoVisivel } from '@/lib/textoRico'
 
 export default function Horario({ p }: { p: PaginaPublica }) {
   const [aberto, setAberto] = useState(false)
@@ -42,10 +41,22 @@ export default function Horario({ p }: { p: PaginaPublica }) {
           ) : (
             <p style={{ margin: 0, color: 'var(--c-text-2)' }}>Horários não informados.</p>
           )}
-          {p.feriados && <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>Feriados: {textoVisivel(p.feriados).split('\n')[0]}</p>}
+          {(p.requer_agendamento || p.tempo_medio || p.antecedencia) && (
+            <p style={{ margin: '0.375rem 0 0', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>
+              {[p.requer_agendamento && 'Agendamento necessário', p.tempo_medio && `Tempo médio: ${p.tempo_medio}`, p.antecedencia && `Antecedência: ${p.antecedencia}`].filter(Boolean).join(' · ')}
+            </p>
+          )}
         </div>
         <BotaoContorno onClick={() => setAberto(true)}>Ver calendário completo</BotaoContorno>
       </div>
+      {p.feriados && (
+        <div style={{ marginTop: '0.875rem', padding: '0.75rem 0.875rem', borderRadius: '0.875rem', background: 'var(--p-soft)', border: '1px solid var(--p-soft-border)', fontSize: '0.9375rem' }}>
+          <p style={{ margin: '0 0 0.25rem', fontWeight: 700, fontSize: '0.875rem' }}>Feriados e datas especiais</p>
+          <div style={{ color: 'var(--c-text-2)' }}>
+            <TextoFormatado texto={p.feriados} />
+          </div>
+        </div>
+      )}
 
       {aberto && (
         <Modal titulo="Calendário de funcionamento" onClose={() => setAberto(false)} largura={480}>

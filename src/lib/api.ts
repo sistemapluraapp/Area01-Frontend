@@ -192,6 +192,16 @@ export interface AvaliacaoPublica {
   autor_avatar_url: string | null
 }
 
+export type CanalContato = 'whatsapp' | 'ligacao' | 'email' | 'sms' | 'instagram' | 'site' | 'presencial' | 'outro'
+
+export interface ContatoPagina {
+  canal: CanalContato
+  titulo: string
+  descricao: string | null
+  link: string | null
+  preferencial: boolean
+}
+
 export interface PaginaPublica extends Omit<PaginaCard, 'nota_media' | 'total_avaliacoes'> {
   descricao: string | null
   slogan: string | null
@@ -220,6 +230,9 @@ export interface PaginaPublica extends Omit<PaginaCard, 'nota_media' | 'total_av
   antes_de_ir: string[]
   antes_de_ir_observacoes: string | null
   seguranca: Record<string, string>
+  contatos: ContatoPagina[]
+  mapa_link: string | null
+  localizacao_comentarios: string | null
   updated_at: string
   midias: Midia[]
   experiencias: Experiencia[]
@@ -233,6 +246,7 @@ export interface ItemCatalogo {
   codigo: string
   rotulo: string
   icone: string | null
+  descricao?: string | null
 }
 
 export interface Catalogo {

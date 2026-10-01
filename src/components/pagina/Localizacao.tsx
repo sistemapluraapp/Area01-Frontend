@@ -1,10 +1,32 @@
 'use client'
 
 import { useState, type ReactNode } from 'react'
-import { IconBrandInstagram, IconBrandWhatsapp, IconBus, IconCar, IconChevronDown, IconMapPin, IconWheelchair, IconWorld } from '@tabler/icons-react'
+import { IconBrandInstagram, IconBrandWhatsapp, IconBus, IconCar, IconChevronDown, IconLink, IconMail, IconMapPin, IconMessage, IconPhone, IconStarFilled, IconWheelchair, IconWorld } from '@tabler/icons-react'
 import { Cartao, LinkAcao, TextoFormatado, TituloSecao } from './ui'
 import { urlComoChegar, urlWhatsapp, useDistancia } from './Cabecalho'
-import type { PaginaPublica } from '@/lib/api'
+import type { CanalContato, PaginaPublica } from '@/lib/api'
+
+const ROTULO_CANAL: Record<CanalContato, string> = {
+  whatsapp: 'WhatsApp',
+  ligacao: 'Ligação',
+  email: 'E-mail',
+  sms: 'SMS',
+  instagram: 'Instagram',
+  site: 'Site',
+  presencial: 'Atendimento presencial',
+  outro: 'Outro canal',
+}
+
+const ICONE_CANAL: Record<CanalContato, typeof IconWorld> = {
+  whatsapp: IconBrandWhatsapp,
+  ligacao: IconPhone,
+  email: IconMail,
+  sms: IconMessage,
+  instagram: IconBrandInstagram,
+  site: IconWorld,
+  presencial: IconMapPin,
+  outro: IconLink,
+}
 
 function Rota({ icone, titulo, texto, destaque }: { icone: ReactNode; titulo: string; texto: string; destaque?: boolean }) {
   const [aberto, setAberto] = useState(!!destaque)
@@ -25,7 +47,7 @@ export function Localizacao({ p }: { p: PaginaPublica }) {
   const temCoordenadas = p.latitude != null && p.longitude != null
   const endereco = [p.endereco, p.complemento].filter(Boolean).join(' · ')
   const cidade = [p.cidade, p.uf].filter(Boolean).join(' - ')
-  if (!temCoordenadas && !endereco && !cidade) return null
+  if (!temCoordenadas && !endereco && !cidade && !p.mapa_link) return null
 
   const d = 0.004
   const mapa = temCoordenadas
@@ -52,6 +74,12 @@ export function Localizacao({ p }: { p: PaginaPublica }) {
           {distancia.texto && <p style={{ margin: '0.25rem 0 0', color: 'var(--p-accent-text)', fontWeight: 600 }}>{distancia.texto}</p>}
         </div>
       </div>
+      {p.localizacao_comentarios && (
+        <div style={{ marginBottom: '0.875rem', padding: '0.75rem 0.875rem', borderRadius: '0.875rem', background: 'var(--p-soft)', border: '1px solid var(--p-soft-border)', fontSize: '0.9375rem', color: 'var(--c-text-1)' }}>
+          <p style={{ margin: '0 0 0.25rem', fontWeight: 700, fontSize: '0.875rem' }}>Sobre a localização</p>
+          <TextoFormatado texto={p.localizacao_comentarios} />
+        </div>
+      )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {p.rota_acessivel && <Rota icone={<IconWheelchair size={20} aria-hidden />} titulo="Como chegar com cadeira de rodas" texto={p.rota_acessivel} destaque />}
         {p.como_chegar_carro && <Rota icone={<IconCar size={20} aria-hidden />} titulo="Como chegar de carro" texto={p.como_chegar_carro} />}
@@ -65,7 +93,9 @@ export function Contato({ p }: { p: PaginaPublica }) {
   const whatsapp = urlWhatsapp(p)
   const instagram = p.instagram?.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '')
   const site = p.website
-  if (!whatsapp && !instagram && !site) return null
+  const canais = p.contatos ?? []
+  if (!whatsapp && !instagram && !site && canais.length === 0) return null
+  const preferencial = canais.find((c) => c.preferencial)
 
   const numero = p.whatsapp?.replace(/^55/, '')
   const telefone = numero ? (numero.length === 11 ? `(${numero.slice(0, 2)}) ${numero.slice(2, 7)}-${numero.slice(7)}` : `(${numero.slice(0, 2)}) ${numero.slice(2, 6)}-${numero.slice(6)}`) : null
@@ -79,6 +109,44 @@ export function Contato({ p }: { p: PaginaPublica }) {
   return (
     <Cartao>
       <TituloSecao>Contato e redes sociais</TituloSecao>
+      {preferencial && (
+        <p style={{ margin: '0 0 0.75rem', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.9375rem', color: 'var(--c-text-2)' }}>
+          <IconStarFilled size={16} color="#f5a524" aria-hidden /> Prefere contato por <strong style={{ color: 'var(--c-text-1)' }}>{ROTULO_CANAL[preferencial.canal]}</strong>
+        </p>
+      )}
+      {canais.length > 0 && (
+        <ul style={{ listStyle: 'none', margin: '0 0 0.75rem', padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.5rem' }}>
+          {[...canais].sort((a, b) => Number(b.preferencial) - Number(a.preferencial)).map((c, i) => {
+            const I = ICONE_CANAL[c.canal]
+            const conteudo = (
+              <>
+                <I size={24} color="var(--p-accent-text)" aria-hidden style={{ flexShrink: 0 }} />
+                <span style={{ minWidth: 0 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontWeight: 700, fontSize: '0.9375rem' }}>
+                    {c.titulo}
+                    {c.preferencial && (
+                      <span style={{ fontSize: '0.6875rem', fontWeight: 800, padding: '0.1rem 0.45rem', borderRadius: '9999px', background: 'var(--p-accent)', color: 'var(--p-accent-contrast)' }}>Preferencial</span>
+                    )}
+                  </span>
+                  <span style={{ display: 'block', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>{ROTULO_CANAL[c.canal]}{c.descricao ? ` · ${c.descricao}` : ''}</span>
+                </span>
+              </>
+            )
+            const estilo = { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0.875rem', borderRadius: '0.875rem', border: c.preferencial ? '2px solid var(--p-accent)' : 'var(--c-border)', textDecoration: 'none', color: 'var(--c-text-1)', background: c.preferencial ? 'var(--p-soft)' : 'transparent' } as const
+            return (
+              <li key={`${c.canal}-${i}`}>
+                {c.link ? (
+                  <a href={c.link} target={c.link.startsWith('https:') ? '_blank' : undefined} rel="noopener noreferrer" style={estilo}>
+                    {conteudo}
+                  </a>
+                ) : (
+                  <div style={estilo}>{conteudo}</div>
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      )}
       <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
         {itens.map(({ href, rotulo, valor, Icone: I, cor }) => (
           <li key={rotulo}>

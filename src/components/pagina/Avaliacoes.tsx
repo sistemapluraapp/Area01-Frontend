@@ -90,7 +90,15 @@ export default function Avaliacoes({ p }: { p: PaginaPublica }) {
 
   return (
     <Cartao id="avaliacoes">
-      <TituloSecao acao={p.avaliacoes.length > 3 && <LinkAcao onClick={() => setTodas((t) => !t)}>{todas ? 'Ver menos' : 'Ver todas'}</LinkAcao>}>Avaliações</TituloSecao>
+      <TituloSecao acao={p.avaliacoes.length > 3 && <LinkAcao onClick={() => setTodas((t) => !t)}>{todas ? 'Ver menos' : 'Ver todas'}</LinkAcao>}>
+        Avaliações
+        {p.nota_media != null && (
+          <span style={{ marginLeft: '0.5rem', fontSize: '0.9375rem', fontWeight: 700, color: 'var(--c-text-2)', whiteSpace: 'nowrap' }}>
+            <span aria-hidden style={{ color: '#f5a524' }}>★</span> {formatarNota(p.nota_media)}{' '}
+            <span style={{ fontWeight: 500 }}>({p.total_avaliacoes} {p.total_avaliacoes === 1 ? 'avaliação' : 'avaliações'})</span>
+          </span>
+        )}
+      </TituloSecao>
 
       {p.nota_media != null ? (
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '1rem' }}>
