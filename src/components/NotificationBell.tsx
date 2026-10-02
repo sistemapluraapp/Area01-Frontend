@@ -49,14 +49,18 @@ export default function NotificationBell() {
   }
 
   async function clicarNotificacao(n: Notificacao) {
-    if (n.lida) return
-    setNotificacoes((atual) => atual.map((x) => (x.id === n.id ? { ...x, lida: true } : x)))
-    setTotal((t) => Math.max(0, t - 1))
-    try {
-      await api.marcarNotificacaoComoLida(n.id)
-    } catch {
-      // mantém o estado otimista mesmo se a requisição falhar
+    // Avisos ligados a uma página (ex.: novidade em local favorito) abrem a página
+    const destino = n.entidade_tipo === 'pagina' && n.entidade_id ? `/pagina?id=${n.entidade_id}` : null
+    if (!n.lida) {
+      setNotificacoes((atual) => atual.map((x) => (x.id === n.id ? { ...x, lida: true } : x)))
+      setTotal((t) => Math.max(0, t - 1))
+      try {
+        await api.marcarNotificacaoComoLida(n.id)
+      } catch {
+        // mantém o estado otimista mesmo se a requisição falhar
+      }
     }
+    if (destino) window.location.href = destino
   }
 
   async function marcarTodasComoLidas() {

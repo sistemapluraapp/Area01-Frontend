@@ -140,6 +140,7 @@ export interface PaginaCard {
   subtitulo: string | null
   descricao_curta: string | null
   categoria: string | null
+  pais?: string
   cidade: string | null
   uf: string | null
   logo_url: string | null
@@ -293,6 +294,14 @@ export interface Favorito {
   paginas: PaginaCard
 }
 
+export interface LocalFavorito {
+  id: string
+  pais: string
+  uf: string
+  cidade: string | null
+  criado_em: string
+}
+
 export interface Notificacao {
   id: string
   tipo: string
@@ -316,6 +325,16 @@ export interface ConteudoPagina {
 
 export const api = {
   conteudoPagina: (chave: string) => request<ConteudoPagina>(`/conteudo/${chave}`),
+
+  locaisFavoritos: () => request<{ locais: LocalFavorito[]; avisos_email: boolean }>('/locais-favoritos'),
+
+  adicionarLocalFavorito: (body: { pais: string; uf: string; cidade?: string | null }) =>
+    request<LocalFavorito>('/locais-favoritos', { method: 'POST', body: JSON.stringify(body) }),
+
+  removerLocalFavorito: (id: string) => request<void>(`/locais-favoritos/${id}`, { method: 'DELETE' }),
+
+  definirAvisosFavoritosEmail: (ativo: boolean) =>
+    request<{ avisos_email: boolean }>('/locais-favoritos/avisos-email', { method: 'PUT', body: JSON.stringify({ ativo }) }),
 
   termo: (chave: string) => request<import('@/components/CheckboxTermos').Termo>(`/termos/${chave}`),
 

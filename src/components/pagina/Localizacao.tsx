@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
-import { IconBrandInstagram, IconBrandWhatsapp, IconBus, IconCar, IconChevronDown, IconLink, IconMail, IconMapPin, IconMessage, IconPhone, IconStarFilled, IconWheelchair, IconWorld } from '@tabler/icons-react'
+import { useEffect, useState, type ReactNode } from 'react'
+import { IconBrandInstagram, IconBrandWhatsapp, IconBus, IconCar, IconBell, IconBellCheck, IconChevronDown, IconLink, IconMail, IconMapPin, IconMessage, IconPhone, IconStarFilled, IconWheelchair, IconWorld } from '@tabler/icons-react'
 import { Cartao, LinkAcao, TextoFormatado, TituloSecao } from './ui'
 import { urlComoChegar, urlWhatsapp, useDistancia } from './Cabecalho'
-import type { CanalContato, PaginaPublica } from '@/lib/api'
+import { api, type CanalContato, type PaginaPublica } from '@/lib/api'
+import { exigirLogin } from '@/lib/exigirLogin'
+import { estaLogado } from '@/lib/auth'
 
 const ROTULO_CANAL: Record<CanalContato, string> = {
   whatsapp: 'WhatsApp',
@@ -42,6 +44,52 @@ function Rota({ icone, titulo, texto, destaque }: { icone: ReactNode; titulo: st
   )
 }
 
+// "Favoritar esta cidade": avisos de novidades no local (Etapa 6b)
+function FavoritarCidade({ pais, uf, cidade }: { pais: string; uf: string; cidade: string }) {
+  const [favoritoId, setFavoritoId] = useState<string | null>(null)
+  const [ocupado, setOcupado] = useState(false)
+  const igual = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase()
+
+  useEffect(() => {
+    if (!estaLogado()) return
+    api
+      .locaisFavoritos()
+      .then((r) => setFavoritoId(r.locais.find((l) => l.pais === pais && igual(l.uf, uf) && igual(l.cidade, cidade))?.id ?? null))
+      .catch(() => {})
+  }, [pais, uf, cidade])
+
+  async function alternar() {
+    if (!exigirLogin()) return
+    setOcupado(true)
+    try {
+      if (favoritoId) {
+        await api.removerLocalFavorito(favoritoId)
+        setFavoritoId(null)
+      } else {
+        const novo = await api.adicionarLocalFavorito({ pais, uf, cidade })
+        setFavoritoId(novo.id)
+      }
+    } catch {
+      // mantém o estado atual se falhar
+    } finally {
+      setOcupado(false)
+    }
+  }
+
+  const Icone = favoritoId ? IconBellCheck : IconBell
+  return (
+    <button
+      type="button"
+      onClick={alternar}
+      disabled={ocupado}
+      aria-pressed={!!favoritoId}
+      style={{ marginTop: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.375rem 0.75rem', borderRadius: '9999px', border: '1px solid var(--p-soft-border)', background: favoritoId ? 'var(--p-soft)' : 'transparent', color: 'var(--p-accent-text)', fontWeight: 600, fontSize: '0.8125rem', fontFamily: 'inherit', cursor: 'pointer' }}
+    >
+      <Icone size={16} aria-hidden /> {favoritoId ? `Acompanhando ${cidade}` : `Avise-me das novidades em ${cidade}`}
+    </button>
+  )
+}
+
 export function Localizacao({ p }: { p: PaginaPublica }) {
   const distancia = useDistancia(p.latitude, p.longitude)
   const temCoordenadas = p.latitude != null && p.longitude != null
@@ -72,6 +120,7 @@ export function Localizacao({ p }: { p: PaginaPublica }) {
           {cidade && <p style={{ margin: 0, color: 'var(--c-text-2)' }}>{cidade}{p.cep ? ` · CEP ${p.cep}` : ''}</p>}
           {p.ponto_referencia && <p style={{ margin: '0.25rem 0 0', color: 'var(--c-text-2)' }}>Referência: {p.ponto_referencia}</p>}
           {distancia.texto && <p style={{ margin: '0.25rem 0 0', color: 'var(--p-accent-text)', fontWeight: 600 }}>{distancia.texto}</p>}
+          {p.cidade && p.uf && <FavoritarCidade pais={p.pais ?? 'BR'} uf={p.uf} cidade={p.cidade} />}
         </div>
       </div>
       {p.localizacao_comentarios && (

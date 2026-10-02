@@ -15,6 +15,7 @@ import CardPagina from '@/components/CardPagina'
 import Icone from '@/components/Icone'
 import { Modal } from '@/components/pagina/ui'
 import { api, type Avaliacao, type Favorito, type Perfil } from '@/lib/api'
+import LocaisFavoritos from '@/components/LocaisFavoritos'
 import { apiPaginas, type MinhaPaginaVinculo } from '@/lib/apiPaginas'
 import { urlGerenciar } from '@/lib/area02'
 import { estaLogado, limparSessao, obterUsuarioSalvo } from '@/lib/auth'
@@ -226,6 +227,10 @@ export default function PerfilPage() {
               ))}
             </div>
           )}
+        </Bloco>
+
+        <Bloco id="locais" titulo="Cidades e estados favoritos">
+          <LocaisFavoritos />
         </Bloco>
 
         <Bloco
