@@ -52,7 +52,7 @@ async function tentarRenovarSessao(): Promise<boolean> {
   }
 }
 
-async function request<T>(path: string, options: RequestInit = {}, isRetry = false): Promise<T> {
+export async function request<T>(path: string, options: RequestInit = {}, isRetry = false): Promise<T> {
   const headers = new Headers(options.headers)
   headers.set('Content-Type', 'application/json')
 
@@ -101,6 +101,7 @@ export interface Perfil {
   nome: string
   nome_social: string | null
   avatar_url: string | null
+  pais: string
   cep: string | null
   endereco: string | null
   cidade: string | null
@@ -349,6 +350,7 @@ export const api = {
     endereco?: string
     cidade?: string
     uf?: string
+    pais?: string
     complemento?: string
     necessidades_acessibilidade?: NecessidadeAcessibilidade[]
     preferencias_turismo?: string[]

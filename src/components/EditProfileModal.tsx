@@ -1,5 +1,7 @@
 'use client'
 
+import SeletorLocalidade from '@/components/SeletorLocalidade'
+import { buscarLocalidade } from '@/lib/localidades'
 import { useRef, useState, type FormEvent } from 'react'
 import { useFocoPreso } from '@/lib/useFocoPreso'
 import GlassCard from './GlassCard'
@@ -45,6 +47,7 @@ export default function EditProfileModal({
   const [endereco, setEndereco] = useState(perfil.endereco ?? '')
   const [cidade, setCidade] = useState(perfil.cidade ?? '')
   const [uf, setUf] = useState(perfil.uf ?? '')
+  const [pais, setPais] = useState(perfil.pais || 'BR')
   const [complemento, setComplemento] = useState(perfil.complemento ?? '')
   const [acessibilidade, setAcessibilidade] = useState<NecessidadeAcessibilidade[]>(
     perfil.necessidades_acessibilidade ?? []
@@ -94,6 +97,7 @@ export default function EditProfileModal({
         endereco: endereco.trim(),
         cidade: cidade.trim(),
         uf: uf.trim(),
+        pais,
         complemento: complemento.trim(),
         necessidades_acessibilidade: acessibilidade,
       })
@@ -234,7 +238,7 @@ export default function EditProfileModal({
             <section style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               <SectionLabel label="Endereço" />
               <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
-                <div style={{ width: '140px', flexShrink: 0 }}>
+                {pais === 'BR' && <div style={{ width: '140px', flexShrink: 0 }}>
                   <Input
                     label="CEP"
                     value={cep}
@@ -244,7 +248,7 @@ export default function EditProfileModal({
                     inputMode="numeric"
                     disabled={buscandoCep}
                   />
-                </div>
+                </div>}
                 <div style={{ flex: 1 }}>
                   <Input
                     label="Endereço"
@@ -256,6 +260,15 @@ export default function EditProfileModal({
                   />
                 </div>
               </div>
+              <SeletorLocalidade
+                valor={{ pais, uf: uf || null, cidade: cidade || null }}
+                onChange={(l) => {
+                  setPais(l.pais)
+                  setUf(l.uf ?? '')
+                  setCidade(l.cidade ?? '')
+                }}
+                buscar={buscarLocalidade}
+              />
               <Input label="Complemento" helperText="Opcional" value={complemento} onChange={(e) => setComplemento(e.target.value)} leadingIcon={<MapPinIcon />} />
             </section>
 
