@@ -1,10 +1,11 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { IconHeart, IconHome, IconUser } from '@tabler/icons-react'
+import { IconCalendarEvent, IconHeart, IconHome, IconUser } from '@tabler/icons-react'
 
 const ITENS = [
   { href: '/', rotulo: 'Início', Icone: IconHome },
+  { href: '/agenda', rotulo: 'Agenda', Icone: IconCalendarEvent },
   { href: '/perfil#destinos', rotulo: 'Destinos salvos', Icone: IconHeart },
   { href: '/perfil', rotulo: 'Perfil', Icone: IconUser },
 ]
@@ -17,7 +18,7 @@ export default function BottomNav() {
     <nav aria-label="Navegação principal" style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 150, background: 'var(--c-glass-bg)', backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', borderTop: '1px solid var(--c-divider)', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <ul style={{ listStyle: 'none', margin: '0 auto', padding: '0.375rem 0.5rem', maxWidth: '520px', display: 'grid', gridTemplateColumns: `repeat(${ITENS.length}, 1fr)` }}>
         {ITENS.map(({ href, rotulo, Icone }) => {
-          const ativo = href === '/' ? caminho === '/' : href === '/perfil' ? caminho === '/perfil' : false
+          const ativo = href === '/' ? caminho === '/' : href === '/perfil' || href === '/agenda' ? caminho === href : false
           return (
             <li key={href}>
               <a href={href} aria-current={ativo ? 'page' : undefined} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem', padding: '0.375rem 0.25rem', textDecoration: 'none', fontSize: '0.6875rem', fontWeight: 600, color: ativo ? 'var(--c-accent-text)' : 'var(--c-text-2)' }}>

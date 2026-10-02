@@ -14,6 +14,7 @@ import Horario from '@/components/pagina/Horario'
 import { Contato, Localizacao } from '@/components/pagina/Localizacao'
 import Galeria, { itensDaGaleria } from '@/components/pagina/Galeria'
 import Experiencias from '@/components/pagina/Experiencias'
+import Eventos from '@/components/pagina/Eventos'
 import { ApresentacaoLibras, ComoEOLugar } from '@/components/pagina/Inclusao'
 import Avaliacoes from '@/components/pagina/Avaliacoes'
 import { AntesDeIr, Denunciar, Recomendacoes, Seguranca, SelosPrevia } from '@/components/pagina/Complementos'
@@ -104,6 +105,7 @@ function PaginaEmpreendimento() {
       <Contato p={pagina} />
       <Galeria p={pagina} id="galeria" />
       <Experiencias p={pagina} catalogo={catalogo} />
+      <Eventos p={pagina} catalogo={catalogo} />
       <Avaliacoes p={pagina} />
       <Recomendacoes p={pagina} catalogo={catalogo} />
       <AntesDeIr p={pagina} catalogo={catalogo} />

@@ -294,6 +294,38 @@ export interface Favorito {
   paginas: PaginaCard
 }
 
+export interface EventoPublico {
+  id: string
+  pagina_id: string
+  titulo: string
+  descricao: string | null
+  imagem_url: string | null
+  link: string | null
+  inicio: string
+  fim: string | null
+  local_nome: string | null
+  endereco: string | null
+  pais: string
+  uf: string | null
+  cidade: string | null
+  gratuito: boolean | null
+  acessibilidades: string[]
+  total_interessados: number
+  interessado: boolean
+  pagina: { id: string; nome: string; tipo: string; logo_url: string | null; recursos_acessibilidade: string[] }
+}
+
+export interface FiltrosAgenda {
+  de?: string
+  ate?: string
+  pais?: string
+  uf?: string
+  cidade?: string
+  q?: string
+  acessibilidade?: string[]
+  gratuito?: boolean
+}
+
 export interface LocalFavorito {
   id: string
   pais: string
@@ -325,6 +357,22 @@ export interface ConteudoPagina {
 
 export const api = {
   conteudoPagina: (chave: string) => request<ConteudoPagina>(`/conteudo/${chave}`),
+
+  agenda: (f: FiltrosAgenda) => {
+    const p = new URLSearchParams()
+    for (const [k, v] of Object.entries(f)) {
+      if (v === undefined || v === null || v === '' || (Array.isArray(v) && v.length === 0) || v === false) continue
+      p.set(k, Array.isArray(v) ? v.join(',') : String(v))
+    }
+    return request<{ eventos: EventoPublico[] }>(`/eventos?${p.toString()}`)
+  },
+
+  eventosDaPagina: (id: string) => request<{ eventos: EventoPublico[] }>(`/paginas/${id}/eventos`),
+
+  marcarInteresse: (id: string, interessado: boolean) =>
+    request<{ interessado: boolean; total_interessados: number }>(`/eventos/${id}/interesse`, { method: interessado ? 'POST' : 'DELETE' }),
+
+  meusEventos: () => request<{ eventos: EventoPublico[] }>('/meus-eventos'),
 
   locaisFavoritos: () => request<{ locais: LocalFavorito[]; avisos_email: boolean }>('/locais-favoritos'),
 
