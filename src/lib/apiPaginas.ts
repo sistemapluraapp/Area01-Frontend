@@ -8,7 +8,9 @@ function redirecionarParaLogin(): void {
   if (
     typeof window !== 'undefined' &&
     window.location.pathname !== '/login' &&
-    window.location.pathname !== '/signup'
+    window.location.pathname !== '/signup' &&
+    window.location.pathname !== '/esqueci-senha' &&
+    window.location.pathname !== '/redefinir-senha'
   ) {
     window.location.href = '/login'
   }

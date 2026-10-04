@@ -131,6 +131,7 @@ export default function LoginPage() {
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
                 <Checkbox label="Lembrar de mim" checked={remember} onChange={setRemember} />
+                <a href="/esqueci-senha" style={{ color: 'var(--c-text-blue)', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' }}>Esqueci minha senha</a>
               </div>
 
               <Button type="submit" size="lg" loading={loading} style={{ width: '100%' }}>

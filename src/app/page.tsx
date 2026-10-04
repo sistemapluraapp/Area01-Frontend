@@ -24,6 +24,11 @@ function normalizar(texto: string) {
 }
 
 export default function HomePage() {
+  // Link de recuperação de senha que caiu na página inicial (endereço de
+  // retorno não autorizado no Supabase): leva para a tela de nova senha.
+  useEffect(() => {
+    if (/(^|&)type=recovery(&|$)/.test(window.location.hash.slice(1))) window.location.replace(`/redefinir-senha${window.location.hash}`)
+  }, [])
   useTituloPagina('Buscar lugares acessíveis')
   const router = useRouter()
   const catalogo = useCatalogo()
