@@ -25,6 +25,7 @@ import { exigirLogin } from '@/lib/exigirLogin'
 import { temaValido } from '@/lib/temasPagina'
 import { useCatalogo } from '@/lib/useCatalogo'
 import { useTituloPagina } from '@/lib/useTituloPagina'
+import Carregando from '@/components/Carregando'
 
 function PaginaEmpreendimento() {
   const params = useSearchParams()
@@ -77,7 +78,7 @@ function PaginaEmpreendimento() {
     )
   }
 
-  if (!pagina) return <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)', padding: '2rem 0' }}>carregando…</p>
+  if (!pagina) return <Carregando />
 
   const tema = temaValido(pagina.tema)
 
@@ -125,7 +126,7 @@ export default function PaginaPage() {
         right={<AcoesTopo />}
       />
       <main id="conteudo" tabIndex={-1} style={{ maxWidth: '820px', margin: '0 auto', padding: '5.25rem 1rem 6.5rem', position: 'relative', zIndex: 1 }}>
-        <Suspense fallback={<p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>}>
+        <Suspense fallback={<Carregando />}>
           <PaginaEmpreendimento />
         </Suspense>
       </main>

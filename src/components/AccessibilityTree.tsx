@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import type { NecessidadeAcessibilidade } from '@/lib/api'
 import { useFiltrosAcessibilidade } from '@/lib/useFiltrosAcessibilidade'
 import { ChevronDownIcon } from './icons'
+import Carregando from '@/components/Carregando'
 
 const CATEGORIA_LABEL: Record<string, string> = {
   mobilidade: 'Mobilidade',
@@ -57,9 +58,7 @@ export default function AccessibilityTree({
 
   if (carregando) {
     return (
-      <p style={{ fontSize: '0.75rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)' }}>
-        carregando…
-      </p>
+      <Carregando compacto />
     )
   }
 

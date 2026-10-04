@@ -2,11 +2,11 @@
 
 import { useEffect, useState, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { IconBuildingStore, IconCamera, IconExternalLink, IconHeart, IconLogout, IconPlus, IconSettings } from '@tabler/icons-react'
+import { IconBuildingStore, IconCamera, IconExternalLink, IconHeart, IconPlus, IconSettings } from '@tabler/icons-react'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import NotificationBell from '@/components/NotificationBell'
+import AcoesTopo from '@/components/AcoesTopo'
 import BottomNav from '@/components/BottomNav'
 import EditProfileModal from '@/components/EditProfileModal'
 import EnviarImagemModal from '@/components/EnviarImagemModal'
@@ -19,10 +19,11 @@ import LocaisFavoritos from '@/components/LocaisFavoritos'
 import MeusEventos from '@/components/eventos/MeusEventos'
 import { apiPaginas, type MinhaPaginaVinculo } from '@/lib/apiPaginas'
 import { urlGerenciar } from '@/lib/area02'
-import { estaLogado, limparSessao, obterUsuarioSalvo } from '@/lib/auth'
+import { estaLogado, obterUsuarioSalvo } from '@/lib/auth'
 import { formatarCpf } from '@/lib/cpf'
 import { useCatalogo } from '@/lib/useCatalogo'
 import { useTituloPagina } from '@/lib/useTituloPagina'
+import Carregando from '@/components/Carregando'
 
 function iniciaisDe(nome: string): string {
   return nome.trim().split(/\s+/).slice(0, 2).map((p) => p[0]).join('').toUpperCase()
@@ -96,11 +97,6 @@ export default function PerfilPage() {
     if (!carregando && window.location.hash) document.querySelector(window.location.hash)?.scrollIntoView()
   }, [carregando])
 
-  function sair() {
-    limparSessao()
-    router.push('/login')
-  }
-
   async function removerFavorito(paginaId: string) {
     setFavoritos((atual) => atual.filter((f) => f.paginas.id !== paginaId))
     try {
@@ -128,7 +124,7 @@ export default function PerfilPage() {
   if (carregando) {
     return (
       <main id="conteudo" tabIndex={-1} style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>
+        <Carregando />
       </main>
     )
   }
@@ -147,16 +143,7 @@ export default function PerfilPage() {
   return (
     <>
       <Grain />
-      <Header
-        right={
-          <>
-            <NotificationBell />
-            <button type="button" onClick={sair} aria-label="Sair da conta" title="Sair" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <IconLogout size={18} aria-hidden />
-            </button>
-          </>
-        }
-      />
+      <Header right={<AcoesTopo />} />
 
       <main id="conteudo" tabIndex={-1} style={{ maxWidth: '820px', margin: '0 auto', padding: '5.5rem 1rem 3rem', position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <section style={{ background: 'var(--c-glass-bg-lg)', border: 'var(--c-border)', borderRadius: '1.25rem', padding: '1.5rem', boxShadow: 'var(--c-shadow-sm)', display: 'flex', gap: '1.25rem', alignItems: 'center', flexWrap: 'wrap' }}>

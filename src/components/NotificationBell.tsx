@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import GlassCard from './GlassCard'
 import { BellIcon } from './icons'
 import { api, type Notificacao } from '@/lib/api'
+import Carregando from '@/components/Carregando'
 
-export default function NotificationBell() {
+// rotulo: mostra o texto ao lado do sino (menu principal)
+export default function NotificationBell({ rotulo }: { rotulo?: string } = {}) {
   const [aberto, setAberto] = useState(false)
   const [total, setTotal] = useState(0)
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>([])
@@ -77,8 +79,9 @@ export default function NotificationBell() {
     <div ref={containerRef} style={{ position: 'relative' }}>
       <button
         onClick={alternarPainel}
-        aria-label="Notificações"
-        style={{
+        aria-label={total > 0 ? `Notificações: ${total} não lidas` : 'Notificações'}
+        className={rotulo ? 'nav-item' : undefined}
+        style={rotulo ? undefined : {
           position: 'relative',
           display: 'inline-flex',
           alignItems: 'center',
@@ -93,6 +96,7 @@ export default function NotificationBell() {
         }}
       >
         <BellIcon />
+        {rotulo && <span className="nav-rotulo">{rotulo}</span>}
         {total > 0 && (
           <span
             style={{
@@ -140,9 +144,7 @@ export default function NotificationBell() {
 
             <div style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {carregando ? (
-                <p style={{ fontSize: '0.8125rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)', padding: '0.75rem 0', textAlign: 'center' }}>
-                  carregando…
-                </p>
+                <Carregando compacto />
               ) : notificacoes.length === 0 ? (
                 <p style={{ fontSize: '0.8125rem', color: 'var(--c-text-3)', padding: '0.75rem 0', textAlign: 'center' }}>
                   Nenhuma notificação por aqui.

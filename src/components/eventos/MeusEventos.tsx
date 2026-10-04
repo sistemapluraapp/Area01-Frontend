@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import CartaoEvento from '@/components/eventos/CartaoEvento'
 import { api, type EventoPublico } from '@/lib/api'
+import Carregando from '@/components/Carregando'
 
 // Perfil: eventos em que a pessoa marcou "Tenho interesse"
 export default function MeusEventos({ rotuloRecurso }: { rotuloRecurso?: (c: string) => string }) {
@@ -16,7 +17,7 @@ export default function MeusEventos({ rotuloRecurso }: { rotuloRecurso?: (c: str
       .catch(() => setEventos([]))
   }, [])
 
-  if (eventos === null) return <p style={{ color: 'var(--c-text-3)' }}>Carregando…</p>
+  if (eventos === null) return <Carregando compacto />
   const agora = Date.now()
   const proximos = eventos.filter((e) => new Date(e.fim ?? e.inicio).getTime() >= agora)
   const passados = eventos.filter((e) => new Date(e.fim ?? e.inicio).getTime() < agora).reverse()

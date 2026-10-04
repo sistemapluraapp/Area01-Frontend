@@ -2,12 +2,13 @@
 
 import Icone from './Icone'
 import { useCatalogo } from '@/lib/useCatalogo'
+import Carregando from '@/components/Carregando'
 
 // Preferências de turismo do usuário (lista mantida pela Área 04).
 export default function PreferenciasTurismo({ valor, onChange }: { valor: string[]; onChange: (v: string[]) => void }) {
   const { catalogo, carregado } = useCatalogo()
 
-  if (!carregado) return <p style={{ fontSize: '0.8125rem', color: 'var(--c-text-3)', fontFamily: 'var(--font-mono)' }}>carregando…</p>
+  if (!carregado) return <Carregando compacto />
 
   return (
     <div role="group" aria-label="Preferências de turismo" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>

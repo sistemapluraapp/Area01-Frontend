@@ -1,17 +1,20 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
 import { LOGO_DATA_URI } from '@/lib/logo'
-import { SearchIcon } from './icons'
+import { estaLogado } from '@/lib/auth'
 import ModoToggle from './ModoToggle'
+import NavPrincipal from './NavPrincipal'
 import PainelAcessibilidade from './PainelAcessibilidade'
 
-export default function Header({ label, right }: { label?: string; right?: ReactNode }) {
-  const router = useRouter()
+const minhaArea = () => (estaLogado() ? '/perfil' : '/login?destino=%2Fperfil')
 
+// Topo da Área 01. Em telas largas mostra o menu principal; em telas
+// estreitas o menu fica na barra inferior (BottomNav).
+export default function Header({ label, right }: { label?: string; right?: ReactNode }) {
   return (
     <header
+      className="cabecalho-01"
       style={{
         position: 'fixed',
         top: 0,
@@ -45,27 +48,7 @@ export default function Header({ label, right }: { label?: string; right?: React
           {label}
         </span>
       )}
-      <button
-        onClick={() => router.push('/')}
-        aria-label="Buscar lugares"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.4375rem',
-          background: 'none',
-          border: '1px solid var(--c-input-border)',
-          borderRadius: '0.625rem',
-          padding: '0.375rem 0.75rem',
-          color: 'var(--c-text-2)',
-          fontSize: '0.8125rem',
-          fontWeight: 600,
-          fontFamily: 'inherit',
-          cursor: 'pointer',
-        }}
-      >
-        <SearchIcon />
-        <span className="rotulo-buscar">Buscar</span>
-      </button>
+      <NavPrincipal inicio="/" minhaArea={minhaArea} agenda="/agenda" voltarPara="/" />
       <div style={{ flex: 1 }} />
       <PainelAcessibilidade />
       <ModoToggle />

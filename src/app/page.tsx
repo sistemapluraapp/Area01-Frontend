@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { IconSearch, IconUser, IconHandLoveYou } from '@tabler/icons-react'
+import { IconSearch, IconHandLoveYou } from '@tabler/icons-react'
 import Grain from '@/components/Grain'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import NotificationBell from '@/components/NotificationBell'
+import AcoesTopo from '@/components/AcoesTopo'
 import AcessibilidadeFiltro from '@/components/AcessibilidadeFiltro'
 import SugestaoAcessibilidade from '@/components/SugestaoAcessibilidade'
 import BuscaPorVoz from '@/components/BuscaPorVoz'
@@ -18,6 +18,7 @@ import { estaLogado } from '@/lib/auth'
 import { LOGO_DATA_URI } from '@/lib/logo'
 import { useCatalogo } from '@/lib/useCatalogo'
 import { useTituloPagina } from '@/lib/useTituloPagina'
+import Carregando from '@/components/Carregando'
 
 function normalizar(texto: string) {
   return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -103,22 +104,7 @@ export default function HomePage() {
   return (
     <>
       <Grain />
-      <Header
-        right={
-          !logado ? (
-            <a href="/login?destino=/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', height: '38px', padding: '0 1rem', borderRadius: '0.75rem', background: 'linear-gradient(135deg,#1a7aff,#0062e6)', color: '#fff', fontWeight: 700, fontSize: '0.875rem', textDecoration: 'none', flexShrink: 0 }}>
-              Entrar
-            </a>
-          ) : (
-          <>
-            <NotificationBell />
-            <button type="button" onClick={() => router.push('/perfil')} aria-label="Minha área" style={{ width: '38px', height: '38px', borderRadius: '50%', border: '1px solid var(--c-input-border)', background: 'var(--c-glass-bg-sm)', color: 'var(--c-text-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <IconUser size={18} aria-hidden />
-            </button>
-          </>
-          )
-        }
-      />
+      <Header right={<AcoesTopo />} />
 
       <main id="conteudo" tabIndex={-1} style={{ paddingTop: '5rem', paddingBottom: '6rem', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', padding: '2.5rem 1.25rem 2rem', maxWidth: '680px', margin: '0 auto' }}>
@@ -193,7 +179,7 @@ export default function HomePage() {
           )}
 
           {loading ? (
-            <p style={{ fontFamily: 'var(--font-mono)', color: 'var(--c-text-3)' }}>carregando…</p>
+            <Carregando />
           ) : filtradas.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem 1rem', color: 'var(--c-text-2)' }}>
               <IconSearch size={32} style={{ opacity: 0.4 }} aria-hidden />
