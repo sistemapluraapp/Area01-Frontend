@@ -1,5 +1,6 @@
 'use client'
 
+import EtiquetaChip from '@/components/EtiquetaChip'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -179,6 +180,11 @@ export default function Cabecalho({
       </div>
 
       <div style={{ padding: '3.75rem 0.25rem 0', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        {p.etiqueta?.ativo && (
+          <span style={{ display: 'flex' }}>
+            <EtiquetaChip titulo={p.etiqueta.titulo} icone={p.etiqueta.icone} />
+          </span>
+        )}
         <h1 style={{ fontSize: 'clamp(1.625rem, 4vw, 2rem)', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, margin: 0 }}>{p.nome}</h1>
         {p.subtitulo && <p style={{ margin: 0, color: 'var(--c-text-2)', fontSize: '1rem' }}>{p.subtitulo}</p>}
 

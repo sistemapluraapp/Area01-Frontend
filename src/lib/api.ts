@@ -152,6 +152,8 @@ export interface PaginaCard {
   recursos_acessibilidade: string[]
   destaques_acessibilidade: string[]
   video_libras?: string | null
+  // Etiqueta aplicada pela administração (só aparece se ativo)
+  etiqueta?: { titulo: string; icone: string | null; ativo: boolean } | null
   nota_media: number | null
   total_avaliacoes: number
   created_at: string

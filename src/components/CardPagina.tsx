@@ -2,6 +2,7 @@
 
 import { IconHeart, IconHeartFilled, IconMapPin, IconStarFilled, IconHandLoveYou } from '@tabler/icons-react'
 import Icone from './Icone'
+import EtiquetaChip from './EtiquetaChip'
 import type { PaginaCard } from '@/lib/api'
 import type { useCatalogo } from '@/lib/useCatalogo'
 
@@ -39,6 +40,11 @@ export default function CardPagina({
           )}
         </div>
         <div style={{ padding: compacto ? '0.75rem' : '1.625rem 0.95rem 0.95rem', display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: 1 }}>
+          {p.etiqueta?.ativo && (
+            <span style={{ display: 'flex' }}>
+              <EtiquetaChip titulo={p.etiqueta.titulo} icone={p.etiqueta.icone} tamanho="pequeno" />
+            </span>
+          )}
           <h3 style={{ margin: 0, fontSize: compacto ? '0.9375rem' : '1.0625rem', fontWeight: 700, lineHeight: 1.25 }}>{p.nome}</h3>
           {p.subtitulo && <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>{p.subtitulo}</p>}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.8125rem', color: 'var(--c-text-2)' }}>
