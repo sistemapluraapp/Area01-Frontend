@@ -57,6 +57,7 @@ export default function PerfilPage() {
   const [avaliacoes, setAvaliacoes] = useState<Avaliacao[]>([])
   const [favoritos, setFavoritos] = useState<Favorito[]>([])
   const [empreendimentos, setEmpreendimentos] = useState<MinhaPaginaVinculo[]>([])
+  const [paginasGov, setPaginasGov] = useState<{ url: string; total: number } | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
@@ -81,7 +82,13 @@ export default function PerfilPage() {
       .catch((e) => setErro(e instanceof Error ? e.message : 'Erro ao carregar perfil'))
       .finally(() => setCarregando(false))
     api.listarFavoritos().then(({ favoritos }) => setFavoritos(favoritos)).catch(() => {})
-    apiPaginas.minhasPaginas().then(({ paginas }) => setEmpreendimentos(paginas.filter((v) => v.paginas))).catch(() => {})
+    apiPaginas
+      .minhasPaginas()
+      .then(({ paginas, outra_area }) => {
+        setEmpreendimentos(paginas.filter((v) => v.paginas))
+        if (outra_area && outra_area.total > 0) setPaginasGov({ url: outra_area.url, total: outra_area.total })
+      })
+      .catch(() => {})
   }, [router])
 
   // Abre a seção pedida pela barra inferior (/perfil#destinos) depois de carregar
@@ -257,7 +264,15 @@ export default function PerfilPage() {
           <p style={{ margin: '0 0 0.875rem', fontSize: '0.875rem', color: 'var(--c-text-2)' }}>
             A gestão das páginas acontece no painel de empreendimentos da Plura. Você entra nele automaticamente, sem precisar fazer login de novo.
           </p>
-          {empreendimentos.length === 0 ? (
+          {paginasGov && (
+            <p style={{ margin: '0 0 0.875rem', fontSize: '0.875rem', color: 'var(--c-text-2)', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              Você também faz parte da equipe de {paginasGov.total === 1 ? '1 página Gov' : `${paginasGov.total} páginas Gov`}, editadas na Plura Gov.
+              <a href={paginasGov.url} style={botaoSecundario}>
+                Abrir Plura Gov <IconExternalLink size={15} aria-hidden />
+              </a>
+            </p>
+          )}
+          {empreendimentos.length === 0 && paginasGov ? null : empreendimentos.length === 0 ? (
             <p style={{ color: 'var(--c-text-2)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <IconBuildingStore size={18} aria-hidden /> Você ainda não administra nem colabora com nenhum empreendimento.
             </p>

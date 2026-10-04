@@ -98,5 +98,6 @@ export interface MinhaPaginaVinculo {
 }
 
 export const apiPaginas = {
-  minhasPaginas: () => request<{ paginas: MinhaPaginaVinculo[] }>('/minhas-paginas'),
+  // outra_area: páginas Gov em que a pessoa colabora (editadas em gov.plura.app.br)
+  minhasPaginas: () => request<{ paginas: MinhaPaginaVinculo[]; outra_area?: { nome: string; url: string; total: number } }>('/minhas-paginas'),
 }
