@@ -52,7 +52,15 @@ export default function NotificationBell({ rotulo }: { rotulo?: string } = {}) {
 
   async function clicarNotificacao(n: Notificacao) {
     // Avisos ligados a uma página (ex.: novidade em local favorito) abrem a página
-    const destino = n.entidade_tipo === 'pagina' && n.entidade_id ? `/pagina?id=${n.entidade_id}` : null
+    // Convites para equipe de página levam à área onde a pessoa aceita ou recusa
+    const destino =
+      n.tipo === 'convite_equipe' && typeof n.metadata?.link === 'string'
+        ? n.metadata.link
+        : n.tipo.startsWith('convite_equipe_')
+          ? null
+          : n.entidade_tipo === 'pagina' && n.entidade_id
+            ? `/pagina?id=${n.entidade_id}`
+            : null
     if (!n.lida) {
       setNotificacoes((atual) => atual.map((x) => (x.id === n.id ? { ...x, lida: true } : x)))
       setTotal((t) => Math.max(0, t - 1))
