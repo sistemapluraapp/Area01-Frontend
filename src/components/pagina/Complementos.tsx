@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, type FormEvent } from 'react'
-import { IconAlertTriangle, IconCircleCheckFilled, IconFlag, IconRosetteDiscountCheck, IconShieldCheck, IconSparkles } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCircleCheckFilled, IconFlag, IconRosetteDiscountCheck, IconShieldCheck } from '@tabler/icons-react'
 import Icone from '../Icone'
 import CardPagina from '../CardPagina'
 import { Cartao, IconeRedondo, Modal, TextoFormatado, TituloSecao } from './ui'
@@ -90,22 +90,31 @@ export function Seguranca({ p }: { p: PaginaPublica }) {
 
 // TODO(selos): prévia visual, igual em todas as áreas, até a seção de selos
 // e certificações ser desenhada (landing page + solicitação à Área 04).
-export function SelosPrevia() {
+// Selos de certificação válidos (8e); sem selos, a seção não aparece
+export function Selos({ p }: { p: PaginaPublica }) {
+  const selos = p.certificacoes ?? []
+  if (!selos.length) return null
   return (
-    <Cartao style={{ borderStyle: 'dashed' }}>
-      <TituloSecao
-        acao={
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '9999px', background: 'var(--p-soft)', color: 'var(--p-accent-text)' }}>
-            <IconSparkles size={14} aria-hidden /> Em breve
-          </span>
-        }
-      >
-        Selos e certificações
-      </TituloSecao>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--c-text-2)', fontSize: '0.9rem' }}>
-        <IconRosetteDiscountCheck size={32} color="var(--p-accent-text)" aria-hidden />
-        Em breve, selos mostrarão quais informações de acessibilidade deste local foram verificadas pela Plura.
-      </div>
+    <Cartao>
+      <TituloSecao>Selos e certificações</TituloSecao>
+      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' }}>
+        {selos.map((s) => (
+          <li key={s.codigo} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', padding: '0.875rem', borderRadius: '1rem', border: 'var(--c-border)', background: 'var(--c-glass-bg)' }}>
+            <span aria-hidden style={{ width: '48px', height: '48px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--p-soft)', color: 'var(--p-accent-text)' }}>
+              {s.icone ? <Icone nome={s.icone} size={24} /> : <IconRosetteDiscountCheck size={26} />}
+            </span>
+            <span style={{ minWidth: 0 }}>
+              <strong style={{ display: 'block', fontSize: '0.9375rem' }}>{s.titulo}</strong>
+              <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--c-text-3)', marginTop: '0.15rem' }}>
+                Certificado pela Plura{s.expira_em ? ` · válido até ${new Date(s.expira_em).toLocaleDateString('pt-BR')}` : ''}
+              </span>
+              <a href={`/verificar?codigo=${encodeURIComponent(s.codigo)}`} style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--p-accent-text)' }}>
+                Verificar {s.codigo}
+              </a>
+            </span>
+          </li>
+        ))}
+      </ul>
     </Cartao>
   )
 }

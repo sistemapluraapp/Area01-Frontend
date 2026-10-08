@@ -208,6 +208,30 @@ export interface ContatoPagina {
   preferencial: boolean
 }
 
+export interface SeloCertificacao {
+  codigo: string
+  titulo: string
+  icone: string | null
+  imagem_url: string | null
+  concedida_em: string
+  expira_em: string | null
+}
+
+export interface VerificacaoCertificado {
+  codigo: string
+  certificacao_titulo: string
+  certificacao_icone: string | null
+  certificacao_resumo: string | null
+  pagina_id: string
+  pagina_nome: string
+  pagina_tipo: string
+  pagina_cidade: string | null
+  pagina_uf: string | null
+  concedida_em: string
+  expira_em: string | null
+  situacao: 'valida' | 'vencida' | 'invalida'
+}
+
 export interface PaginaPublica extends Omit<PaginaCard, 'nota_media' | 'total_avaliacoes'> {
   descricao: string | null
   slogan: string | null
@@ -246,6 +270,8 @@ export interface PaginaPublica extends Omit<PaginaCard, 'nota_media' | 'total_av
   nota_media: number | null
   total_avaliacoes: number
   recomendacoes: PaginaCard[]
+  // Selos de certificação válidos (8e)
+  certificacoes?: SeloCertificacao[]
 }
 
 export interface ItemCatalogo {
@@ -360,6 +386,7 @@ export interface ConteudoPagina {
 }
 
 export const api = {
+  verificarCertificado: (codigo: string) => request<VerificacaoCertificado>(`/verificar/${encodeURIComponent(codigo)}`),
   conteudoPagina: (chave: string) => request<ConteudoPagina>(`/conteudo/${chave}`),
 
   agenda: (f: FiltrosAgenda) => {

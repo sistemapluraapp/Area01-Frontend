@@ -17,7 +17,7 @@ import Experiencias from '@/components/pagina/Experiencias'
 import Eventos from '@/components/pagina/Eventos'
 import { ApresentacaoLibras, ComoEOLugar } from '@/components/pagina/Inclusao'
 import Avaliacoes from '@/components/pagina/Avaliacoes'
-import { AntesDeIr, Denunciar, Recomendacoes, Seguranca, SelosPrevia } from '@/components/pagina/Complementos'
+import { AntesDeIr, Denunciar, Recomendacoes, Seguranca, Selos } from '@/components/pagina/Complementos'
 import { TemaPaginaContext } from '@/components/pagina/ui'
 import { api, type PaginaPublica } from '@/lib/api'
 import { estaLogado } from '@/lib/auth'
@@ -97,6 +97,7 @@ function PaginaEmpreendimento() {
       />
       <div style={{ height: '0.25rem' }} />
       <Sobre p={pagina} catalogo={catalogo} />
+      <Selos p={pagina} />
       <ApresentacaoLibras p={pagina} />
       <NivelAcessibilidade p={pagina} catalogo={catalogo} />
       <ComoEOLugar p={pagina} />
@@ -111,7 +112,6 @@ function PaginaEmpreendimento() {
       <Recomendacoes p={pagina} catalogo={catalogo} />
       <AntesDeIr p={pagina} catalogo={catalogo} />
       <Seguranca p={pagina} />
-      <SelosPrevia />
       <Denunciar p={pagina} />
     </div>
     </TemaPaginaContext.Provider>
