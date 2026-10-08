@@ -54,7 +54,7 @@ export default function NotificationBell({ rotulo }: { rotulo?: string } = {}) {
     // Avisos ligados a uma página (ex.: novidade em local favorito) abrem a página
     // Convites para equipe de página levam à área onde a pessoa aceita ou recusa
     const destino =
-      n.tipo === 'convite_equipe' && typeof n.metadata?.link === 'string'
+      (n.tipo === 'convite_equipe' || n.entidade_tipo === 'certificacao_inscricao') && typeof n.metadata?.link === 'string'
         ? n.metadata.link
         : n.tipo.startsWith('convite_equipe_')
           ? null
