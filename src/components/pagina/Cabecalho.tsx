@@ -162,7 +162,7 @@ export default function Cabecalho({
           style={{ position: 'relative', aspectRatio: '16 / 9', maxHeight: '420px', width: '100%', borderRadius: '1.5rem', overflow: 'hidden', background: p.capa_url ? `url("${p.capa_url}") center/cover no-repeat` : 'linear-gradient(135deg, var(--p-accent), color-mix(in srgb, var(--p-accent) 55%, #000))' }}
         >
           <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 35%, transparent 60%, rgba(0,0,0,0.45) 100%)' }} />
-          <button type="button" onClick={() => (window.history.length > 1 ? router.back() : router.push('/'))} aria-label="Voltar" style={{ position: 'absolute', top: '0.875rem', left: '0.875rem', width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.45)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(6px)' }}>
+          <button type="button" onClick={() => (window.history.length > 1 ? router.back() : router.push('/buscar'))} aria-label="Voltar" style={{ position: 'absolute', top: '0.875rem', left: '0.875rem', width: '40px', height: '40px', borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.45)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(6px)' }}>
             <IconArrowLeft size={22} aria-hidden />
           </button>
           {totalMidias > 0 && (

@@ -48,7 +48,7 @@ export default function Header({ label, right }: { label?: string; right?: React
           {label}
         </span>
       )}
-      <NavPrincipal inicio="/" minhaArea={minhaArea} agenda="/agenda" voltarPara="/" />
+      <NavPrincipal inicio="/buscar" minhaArea={minhaArea} agenda="/agenda" voltarPara="/buscar" />
       <div style={{ flex: 1 }} />
       <PainelAcessibilidade />
       <ModoToggle />

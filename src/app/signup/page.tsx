@@ -109,7 +109,7 @@ export default function SignupPage() {
       }
       salvarSessao(resposta)
       await aplicarPreferencias(preferencias)
-      router.push('/')
+      router.push('/buscar')
     } catch (err) {
       setGeneralError(err instanceof Error ? err.message : 'Não foi possível criar a conta')
     } finally {

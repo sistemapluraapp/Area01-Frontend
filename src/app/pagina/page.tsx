@@ -71,7 +71,7 @@ function PaginaEmpreendimento() {
     return (
       <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
         <p style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>{erro}</p>
-        <a href="/" style={{ color: 'var(--c-accent-text)', fontWeight: 600 }}>
+        <a href="/buscar" style={{ color: 'var(--c-accent-text)', fontWeight: 600 }}>
           Voltar para a busca
         </a>
       </div>

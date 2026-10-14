@@ -177,7 +177,7 @@
   --c-grain-opacity: 0.032;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@layer base { *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; } }
 html { font-size: 100%; -webkit-font-smoothing: antialiased; }
 
 body {

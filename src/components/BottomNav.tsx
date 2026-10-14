@@ -5,7 +5,7 @@ import { IconArrowLeft, IconCalendarEvent, IconHome, IconUserCircle } from '@tab
 import { estaLogado } from '@/lib/auth'
 
 const ITENS = [
-  { href: '/', rotulo: 'Início', Icone: IconHome },
+  { href: '/buscar', rotulo: 'Início', Icone: IconHome },
   { href: '/perfil', rotulo: 'Minha área', Icone: IconUserCircle },
   { href: '/agenda', rotulo: 'Agenda', Icone: IconCalendarEvent },
 ]
@@ -15,7 +15,7 @@ const estilo = { display: 'flex', flexDirection: 'column', alignItems: 'center',
 function voltar() {
   const veioDaqui = document.referrer && new URL(document.referrer).origin === window.location.origin
   if (veioDaqui && window.history.length > 1) window.history.back()
-  else window.location.href = '/'
+  else window.location.href = '/buscar'
 }
 
 // Menu principal no celular (barra inferior, estilo app); em telas largas

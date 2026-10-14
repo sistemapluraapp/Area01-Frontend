@@ -1,0 +1,28 @@
+/* Landing page (Etapa 9): Tailwind sem o reset global; o reset vale só dentro de .fp-site */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@source "./";
+@import "./shared/festival.css";
+
+@layer base {
+  .fp-site, .fp-site *, .fp-site ::before, .fp-site ::after { box-sizing: border-box; border: 0 solid; margin: 0; padding: 0; }
+  .fp-site { line-height: 1.5; -webkit-text-size-adjust: 100%; tab-size: 4; }
+  .fp-site h1, .fp-site h2, .fp-site h3, .fp-site h4, .fp-site h5, .fp-site h6 { font-size: inherit; font-weight: inherit; }
+  .fp-site a { color: inherit; text-decoration: inherit; }
+  .fp-site b, .fp-site strong { font-weight: bolder; }
+  .fp-site ol, .fp-site ul, .fp-site menu { list-style: none; }
+  .fp-site img, .fp-site svg, .fp-site video, .fp-site canvas, .fp-site iframe, .fp-site embed, .fp-site object { display: block; vertical-align: middle; }
+  .fp-site img, .fp-site video { max-width: 100%; height: auto; }
+  .fp-site button, .fp-site input, .fp-site select, .fp-site optgroup, .fp-site textarea { font: inherit; font-feature-settings: inherit; letter-spacing: inherit; color: inherit; border-radius: 0; background-color: transparent; opacity: 1; }
+  .fp-site button, .fp-site [role="button"] { cursor: pointer; }
+  .fp-site textarea { resize: vertical; }
+  .fp-site ::placeholder { opacity: 1; color: color-mix(in oklab, currentcolor 50%, transparent); }
+  .fp-site [hidden]:where(:not([hidden="until-found"])) { display: none !important; }
+}
+
+/* Do globals.css do site do Festival */
+html:has(.fp-site) { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+.fp-site { position: relative; z-index: 1; min-height: 100vh; background: var(--fp-bg); color: var(--fp-text); font-family: var(--fp-font-body); }
+.fp-site main { padding-top: 4rem; }
+.fp-site main:has(> .fp-page > section:first-child.fp-on-dark) { padding-top: 0; }
